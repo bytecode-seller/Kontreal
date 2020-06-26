@@ -1,0 +1,28 @@
+.ui-widget-content, .ui-widget-content .ui-widget-content {
+    font-size: 95% !important;
+}
+
+.ui-widget, .ui-widget .ui-widget {
+    font-size: 11px !important;
+}
+
+.ui-selectcheckboxmenu-header .ui-chkbox .ui-chkbox-box {
+    display: none;
+}
+
+.ui-panelgrid-mine tr, .ui-panelgrid-mine td {
+    padding: 2px !important;
+    border: none !important;
+}
+
+.calendar_inputbox input {
+    width: 75px;
+}
+
+.ui-panelgrid-vertical-align {
+    vertical-align: top;
+}
+
+.disable-scroll .ui-layout-unit-content {
+  overflow: hidden !important;
+}

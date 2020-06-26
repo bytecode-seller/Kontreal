@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd">
+<hibernate-reverse-engineering>
+  <schema-selection match-catalog="contabilidad"/>
+  <table-filter match-name="factura"/>
+  <table-filter match-name="empresa"/>
+  <table-filter match-name="cuenta"/>
+  <table-filter match-name="cueresultados"/>
+  <table-filter match-name="reporteesp"/>
+  <table-filter match-name="balanza"/>
+  <table-filter match-name="lcuenta"/>
+  <table-filter match-name="concepto"/>
+  <table-filter match-name="gasto"/>
+  <table-filter match-name="minicatalogo"/>
+  <table-filter match-name="lminicatalogo"/>
+</hibernate-reverse-engineering>

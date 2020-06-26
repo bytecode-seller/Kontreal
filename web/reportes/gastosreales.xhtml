@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+            </f:facet>
+            <title>::: K O N T R E A L :::</title>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true">
+
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú" collapsible="true">
+                    <ui:include src="/menu2.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center">
+                    <h:panelGrid width="100%">
+                        <f:facet name="header">
+                            <h:form>
+                                <p:toolbar>
+                                    <p:toolbarGroup align="left">
+                                        <h:panelGrid columns="5">
+                                            <h:outputText value="Desde:&nbsp;"/>
+                                            <p:calendar value="#{showGastosBean.desde}" locale="es" navigator="true" styleClass="calendar_inputbox" pattern="yyyy-MM-dd">
+                                                <p:ajax event="dateSelect" listener="#{showGastosBean.fechasListener()}" update=":formTableFacturas :formTableGastos :formTableTransfer"/>
+                                            </p:calendar>
+                                            <p:spacer width="10"/>
+                                            <h:outputText value="Hasta:&nbsp;"/>
+                                            <p:calendar value="#{showGastosBean.hasta}" locale="es" navigator="true" styleClass="calendar_inputbox" pattern="yyyy-MM-dd">
+                                                <p:ajax event="dateSelect" listener="#{showGastosBean.fechasListener()}" update=":formTableFacturas :formTableGastos :formTableTransfer"/>
+                                            </p:calendar>
+                                        </h:panelGrid>
+                                    </p:toolbarGroup>
+                                    <p:toolbarGroup align="right">
+                                        <h:panelGrid columns="1">
+                                            <p:commandButton value="Quitar Filtros" icon="ui-icon-zoomout" process="@this" actionListener="#{showGastosBean.dropFilters()}"
+                                                             update=":formTableFacturas :formTableGastos :formTableTransfer"/>
+                                        </h:panelGrid>
+                                    </p:toolbarGroup>
+                                    <p:toolbarGroup align="right">
+                                        <h:panelGrid columns="2">
+                                            <p:outputLabel value="Reportes Control"/>
+                                            <p:spacer  height="0" width="400"/>
+                                        </h:panelGrid>
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+                            </h:form>
+                        </f:facet>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2" width="100%" columnClasses="ui-panelgrid-vertical-align">
+                        <p:panel header="Facturas">
+                            <h:form id="formTableFacturas">
+                                <p:dataTable id="facturas" value="#{showGastosBean.facturasData}" widgetVar="widgetTableFacturas"
+                                             var="factura" emptyMessage="No existen registros con esta condición." >
+
+                                    <p:column headerText="Empresa">
+                                        <h:outputText value="#{factura[0]}"/>
+                                    </p:column>
+                                    <p:column headerText="Mes">
+                                        <h:outputText value="#{showGastosBean.convertMonth(factura[1])}"/>
+                                    </p:column>
+                                    <p:column headerText="Facturas" style="text-align: center;">
+                                        <h:outputText value="#{factura[2]}">
+                                            <f:convertNumber type="number" pattern="#,##0"/>
+                                        </h:outputText>
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{showGastosBean.totalesFacturas[0]}">
+                                                <f:convertNumber type="number" pattern="#,##0"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column headerText="Acumulado" style="text-align: right;">
+                                        <h:outputText value="#{factura[3]}">
+                                            <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                        </h:outputText>
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{showGastosBean.totalesFacturas[1]}">
+                                                <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column headerText="Utilizado" style="text-align: right;">
+                                        <h:outputText value="#{factura[4]}">
+                                            <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                        </h:outputText>
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{showGastosBean.totalesFacturas[2]}">
+                                                <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column headerText="Disponible" style="text-align: right;">
+                                        <h:outputText value="#{factura[5]}">
+                                            <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                        </h:outputText>
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{showGastosBean.totalesFacturas[3]}">
+                                                <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:form>
+                        </p:panel>
+
+                        <p:panel header="Gastos">
+                            <h:form id="formTableGastos">
+                                <p:dataTable id="gastos" value="#{showGastosBean.gastosData}" widgetVar="widgetTableGastos"
+                                             var="gasto" emptyMessage="No existen registros con esta condición." >
+
+                                    <p:column headerText="Empresa">
+                                        <h:outputText value="#{gasto[0]}"/>
+                                    </p:column>
+                                    <p:column headerText="Mes">
+                                        <h:outputText value="#{showGastosBean.convertMonth(gasto[1])}"/>
+                                    </p:column>
+                                    <p:column headerText="Concepto">
+                                        <h:outputText value="#{gasto[2]}"/>
+                                    </p:column>
+                                    <p:column headerText="Gastos" style="text-align: center;">
+                                        <h:outputText value="#{gasto[3]}">
+                                            <f:convertNumber type="number" pattern="#,##0"/>
+                                        </h:outputText>
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{showGastosBean.totalesGastos[0]}">
+                                                <f:convertNumber type="number" pattern="#,##0"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column headerText="Total" style="text-align: right;">
+                                        <h:outputText value="#{gasto[4]}">
+                                            <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                        </h:outputText>
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{showGastosBean.totalesGastos[1]}">
+                                                <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:form>
+                        </p:panel>
+                    </h:panelGrid>
+
+                    <p:spacer height="5"/>
+
+                    <p:panel header="Transferencias entre Empresas">
+                        <h:form id="formTableTransfer">
+                            <p:dataTable id="transfers" value="#{showGastosBean.transferData}" widgetVar="widgetTableTransfers"
+                                         var="transfer" emptyMessage="No existen registros con esta condición." >
+
+                                <p:column headerText="Empresa Transmisora">
+                                    <h:outputText value="#{transfer[0]}"/>
+                                </p:column>
+                                <p:column headerText="Empresa Receptora">
+                                    <h:outputText value="#{transfer[1]}"/>
+                                </p:column>
+                                <p:column headerText="Mes">
+                                    <h:outputText value="#{showGastosBean.convertMonth(transfer[2])}"/>
+                                </p:column>
+                                <p:column headerText="Transferencias" style="text-align: center;">
+                                    <h:outputText value="#{transfer[3]}">
+                                        <f:convertNumber type="number" pattern="#,##0"/>
+                                    </h:outputText>
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{showGastosBean.totalesTransfer[0]}">
+                                            <f:convertNumber type="number" pattern="#,##0"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column headerText="Importe Total" style="text-align: right;">
+                                    <h:outputText value="#{transfer[4]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                    </h:outputText>
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{showGastosBean.totalesTransfer[1]}">
+                                            <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:panel>
+
+                    <p:spacer height="5"/>
+
+                    <p:panel header="Estado de Cuenta entre Empresas">
+                        <h:form id="formTableEstado">
+                            <p:dataTable id="estadoscuenta" value="#{showGastosBean.estadoCuenta}"
+                                         var="estado" emptyMessage="No existen registros con esta condición." >
+
+                                <p:column headerText="Empresa" footerText="&nbsp;">
+                                    <ui:repeat  value="#{estado.entrySet().toArray()}" var="entry">
+                                        <h:panelGrid width="100%">
+                                            <h:outputText value="#{entry.key}"/>
+                                        </h:panelGrid>
+                                    </ui:repeat>
+                                </p:column>
+                                <p:column headerText="Movimientos" style="text-align: center;">
+                                    <ui:repeat  value="#{estado.entrySet().toArray()}" var="entry">
+                                        <h:panelGrid width="100%">
+                                            <h:outputText value="#{entry.value[0]}">
+                                                <f:convertNumber type="number" pattern="#,##0"/>
+                                            </h:outputText>
+                                        </h:panelGrid>
+                                    </ui:repeat>
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{showGastosBean.totalesEstadosCuenta[0]}">
+                                            <f:convertNumber type="number" pattern="#,##0"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column headerText="Egresos">
+                                    <ui:repeat  value="#{estado.entrySet().toArray()}" var="entry">
+                                        <h:panelGrid width="100%" style="text-align: right;">
+                                            <h:outputText value="#{entry.value[1]}">
+                                                <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                            </h:outputText>
+                                        </h:panelGrid>
+                                    </ui:repeat>
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{showGastosBean.totalesEstadosCuenta[1]}">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column headerText="Ingresos">
+                                    <ui:repeat  value="#{estado.entrySet().toArray()}" var="entry">
+                                        <h:panelGrid width="100%" style="text-align: right;">
+                                            <h:outputText value="#{entry.value[2]}">
+                                                <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                            </h:outputText>
+                                        </h:panelGrid>
+                                    </ui:repeat>
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{showGastosBean.totalesEstadosCuenta[2]}">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                                <p:column headerText="Bancos">
+                                    <ui:repeat  value="#{estado.entrySet().toArray()}" var="entry">
+                                        <h:panelGrid width="100%" style="text-align: right;">
+                                            <h:outputText value="#{entry.value[3]}">
+                                                <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                            </h:outputText>
+                                        </h:panelGrid>
+                                    </ui:repeat>
+                                    <f:facet name="footer">
+                                        <h:outputText value="#{showGastosBean.totalesEstadosCuenta[3]}">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </f:facet>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:panel>
+                </p:layoutUnit>
+
+            </p:layout>
+
+        </h:body>
+
+    </f:view>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true">
+
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu2.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center" header="Bienvenido a Kontreal">
+                    <p:outputPanel style="position: absolute;left: 50%;margin-left: -183px;width: 366px;top:50%;margin-top: -24px;height: 48px">
+                        <h:graphicImage url="/resources/images/kontreal_titulo.png"/>
+                    </p:outputPanel>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+            </p:layout>
+
+        </h:body>
+
+    </f:view>
+</html>
+

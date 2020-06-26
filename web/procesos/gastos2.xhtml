@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true" widgetVar="widgetLayout">
+
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu2.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center">
+                    <p:growl id="growlMess" globalOnly="true" showDetail="true" />
+                    <h:form id="formData">
+                        <p:panel header="GASTOS REALES">
+                            <p:panelGrid style="width: 100%" styleClass="ui-panelgrid-mine">
+                                <p:row>
+                                    <p:column colspan="5" style="text-align: center;">
+                                        <h:outputText value="G A S T O" style="font-size: larger;font-weight: bold;" />
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:spacer height="5"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Fecha:" title="Fecha de aplicación del gasto." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:calendar value="#{gastosGlobalBean.gasto.fecha}" locale="es" navigator="true"  pattern="yyyy-MM-dd"/>
+                                    </p:column>
+                                    <p:column/>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Facturas:" title="Total de gastos liquidados a la fecha con recursos provenientes de la factura seleccionada." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText value="#{gastosGlobalBean.documentos}" style="text-align: right;" readonly="true" />
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Importe:" title="Monto del gasto." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText value="#{gastosGlobalBean.gasto.importe}" style="text-align: right;" required="true"
+                                                     requiredMessage="Ingresa el monto del gasto." validator="#{validatorBean.validateImporte}">
+                                            <f:attribute name="disponible" value="#{gastosGlobalBean.disponible}"/>
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                    <p:column/>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Importe:" title="Monto original que ampara esta factura, incluido impuesto." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText value="#{gastosGlobalBean.acumulado}" style="text-align: right;" readonly="true">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Empresa:" title="Empresa en la cual se genera este gasto." />
+                                    </p:column>
+                                    <p:column style="width: 240px;">
+                                        <p:selectOneMenu id="empresadestino" value="#{gastosGlobalBean.gasto.empresa}" style="width: 225px;" required="true" requiredMessage="Selecciona una empresa."
+                                                         converter="converterEmpresaGastoGlobal">
+                                            <f:selectItems value="#{gastosGlobalBean.empresasConverter}" />
+                                            <p:ajax event="valueChange" listener="#{gastosGlobalBean.empresaDestinoListener()}" update="conceptogasto" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column style="width: 225px;">
+                                        <p:message for="empresadestino" />
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Utilizado:" title="Monto total que se ha destinado para gastos liquidados con recursos provenientes de esta factura." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText value="#{gastosGlobalBean.utilizado}" style="text-align: right;" readonly="true">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Concepto:" title="Breve descripción del producto o servicio al que hace referencia este gasto, debe darse de alta previamente." />
+                                    </p:column>
+                                    <p:column style="width: 240px;">
+                                        <p:selectOneMenu id="conceptogasto" value="#{gastosGlobalBean.gasto.concepto}" style="width: 225px;" required="true"
+                                                         requiredMessage="Selecciona un concepto." converter="converterConceptoGastoGlobal">
+                                            <f:selectItems value="#{gastosGlobalBean.conceptosConverter}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column style="width: 225px;">
+                                        <p:message for="conceptogasto" />
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Disponible:" title="Importe remanete útil de esta factura en espera de destino final." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText value="#{gastosGlobalBean.disponible}" style="text-align: right;" readonly="true">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:spacer height="10"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Observación:" title="Cualquier elemento informativo, nota, recordatorio o justificación que sea necesario incluir en este gasto." />
+                                    </p:column>
+                                    <p:column colspan="4">
+                                        <p:inputTextarea value="#{gastosGlobalBean.gasto.comentario}" style="width: 99%" maxlength="500" autoResize="false"
+                                                         onchange="this.value = this.value.toUpperCase();" />
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:spacer height="5"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+
+                            <p:separator/>
+
+                            <h:panelGrid id="buttons" columns="2" width="100%" style="text-align: center;" >
+                                <p:commandButton value="Cancelar" icon="ui-icon-close" style="width: 105px;" process="@this" actionListener="#{gastosGlobalBean.cancelarListener()}"
+                                                 update="@form :formTable" title="Cancelar el registro actual y limpiar el formulario.">
+                                    <p:resetInput target="formData" />
+                                </p:commandButton>
+                                <p:commandButton value="Aceptar" icon="ui-icon-check" style="width: 105px;" actionListener="#{gastosGlobalBean.aceptarListener()}"
+                                                 update="@form :formTable :growlMess" title="Validar y guardar el registro actual." />
+                            </h:panelGrid>
+                        </p:panel>
+                    </h:form>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="east" header="GASTOS REALES REGISTRADOS" size="100%" collapsible="true" collapsed="true">
+                    <h:form id="formTable">
+                        <p:dataTable id="dataTable"  widgetVar="widgetTable" value="#{gastosGlobalBean.gastosData}" filteredValue="#{gastosGlobalBean.gastosFilter}" var="gasto"
+                                     rowKey="#{gasto.idGasto}" selection="#{gastosGlobalBean.selectedGasto}" selectionMode="single" scrollable="true" scrollHeight="420"
+                                     emptyMessage="No existen gastos.">
+                            <p:ajax event="rowSelect" update="eliminar modificar" />
+                            <f:facet name="header">
+                                <p:outputPanel>
+                                    <p:toolbar id="toolbar">
+                                        <p:toolbarGroup align="left">
+                                            <h:outputText value="Desde:&nbsp;"/>
+                                            <p:calendar value="#{gastosGlobalBean.desde}" locale="es" navigator="true" styleClass="calendar_inputbox" pattern="yyyy-MM-dd">
+                                                <p:ajax event="dateSelect" listener="#{gastosGlobalBean.fechasListener()}" update="@form :formData" oncomplete="PF('widgetTable').filter();"/>
+                                            </p:calendar>
+                                            <p:spacer width="10"/>
+                                            <h:outputText value="Hasta:&nbsp;"/>
+                                            <p:calendar value="#{gastosGlobalBean.hasta}" locale="es" navigator="true" styleClass="calendar_inputbox" pattern="yyyy-MM-dd">
+                                                <p:ajax event="dateSelect" listener="#{gastosGlobalBean.fechasListener()}" update="@form :formData" oncomplete="PF('widgetTable').filter();"/>
+                                            </p:calendar>
+                                        </p:toolbarGroup>
+                                        <p:toolbarGroup align="right">
+                                            <p:commandButton value="Quitar Filtros" icon="ui-icon-zoomout" process="@this" update="@form :formData"
+                                                             actionListener="#{gastosGlobalBean.dropFilters()}" oncomplete="PF('widgetTable').clearFilters();"/>
+                                            <p:separator/>
+                                            <p:commandButton id="eliminar" value="Eliminar" icon="ui-icon-trash" disabled="#{gastosGlobalBean.selectedGasto eq null}" process="@this"
+                                                             update=":displayEliminate" oncomplete="PF('widgetEliminate').show();"/>
+                                            <p:separator/>
+                                            <p:commandButton id="modificar" value="Modificar" icon="ui-icon-pencil" disabled="#{gastosGlobalBean.selectedGasto eq null}" process="@this"
+                                                             actionListener="#{gastosGlobalBean.chooseModify()}" update=":formData" oncomplete="PF('widgetLayout').toggle('east');" />
+                                            <p:separator/>
+                                            <p:commandButton value="Compatir" icon="ui-icon-person" process="@this" onclick="PF('widgetView').show();"/>
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
+                                </p:outputPanel>
+                            </f:facet>
+                            <f:facet name="footer">
+                                <h:outputText value="Facturas: #{gastosGlobalBean.gastosData.size()}"/>
+                            </f:facet>
+
+                            <p:column headerText="Fecha" sortBy="#{gasto.fecha}">
+                                <h:outputText value="#{gasto.fecha}">
+                                    <f:convertDateTime timeZone="America/Mexico_City" type="date" dateStyle="short" timeStyle="short" pattern="yyyy-MM-dd"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Empresa" sortBy="#{gasto.empresa}" filterBy="#{gasto.empresa}" filterMatchMode="startsWith" filterStyle="width:50px">
+                                <h:outputText value="#{gasto.empresa}"/>
+                            </p:column>
+                            <p:column headerText="Importe" style="text-align: right;">
+                                <h:outputText value="#{gasto.importe}">
+                                    <f:convertNumber type="currency" pattern="$ #,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Concepto" sortBy="#{gasto.concepto}" filterBy="#{gasto.concepto}" filterMatchMode="startsWith" filterStyle="width:50px">
+                                <h:outputText value="#{gasto.concepto}"/>
+                            </p:column>
+                            <p:column headerText="Observación">
+                                <h:outputText value="#{gasto.comentario}"/>
+                            </p:column>
+                            <p:column headerText="Factura" sortBy="#{gasto.factura}" filterBy="#{gasto.factura}" filterMatchMode="startsWith" filterStyle="width:50px">
+                                <h:outputText value="#{gasto.factura}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                </p:layoutUnit>
+
+            </p:layout>
+
+            <p:confirmDialog id="displayEliminate" header="ELIMINAR GASTO" widgetVar="widgetEliminate" closable="false">
+                <f:facet name="message">
+                    <p:outputLabel value="¿Estás seguro de eliminar el gasto #{gastosGlobalBean.selectedGasto.concepto}?&#10;&#10;Esta instrucción no puede revertirse." style="white-space: pre-line"/>
+                </f:facet>
+                <h:form>
+                    <h:panelGrid columns="2" width="100%" style="text-align: center;">
+                        <p:commandButton id="submitButton1" value="No, Mejor No" icon="ui-icon-close" style="width: 135px;" process="@this" onclick="PF('widgetEliminate').hide();"/>
+                        <p:commandButton value="Sí, Seguro" icon="ui-icon-check" style="width: 135px;" actionListener="#{gastosGlobalBean.eliminarListener()}"
+                                         update=":formData :formTable :growlMess" oncomplete="PF('widgetEliminate').hide();"/>
+                    </h:panelGrid>
+                    <p:defaultCommand target="submitButton1"/>
+                </h:form>
+            </p:confirmDialog>
+
+            <p:dialog header="COMPARTIR GASTOS" widgetVar="widgetView" resizable="false" closable="false" modal="true">
+                <br/>
+                <p:outputLabel value="Selecciona las acciones que desees realizar." />
+                <br/>
+                <p:separator/>
+                <br/>
+                <h:panelGrid columns="1" width="100%">
+                    <p:outputLabel value="Reporte en Formato XLS para Hoja de Cálculo." />
+                </h:panelGrid>
+                <br/>
+                <f:facet name="footer">
+                    <h:form>
+                        <h:panelGrid columns="3" >
+                            <h:commandLink onclick="PF('widgetView').hide();">
+                                <h:graphicImage name="images/excel.png"/>
+                                <p:dataExporter type="xls" target=":formTable:dataTable" fileName="gastos"/>
+                            </h:commandLink>
+                            <p:spacer width="10"/>
+                            <p:commandButton id="submitButton" value="Listo" icon="ui-icon-check" process="@this" onclick="PF('widgetView').hide();"/>
+                        </h:panelGrid>
+                        <p:defaultCommand target="submitButton"/>
+                    </h:form>
+                </f:facet>
+            </p:dialog>
+
+        </h:body>
+
+    </f:view>
+</html>

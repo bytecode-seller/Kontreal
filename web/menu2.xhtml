@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <ui:composition>
+        <h:form>
+            <p:menu style="width: 160px;">
+                <p:submenu label="REGISTRO DE GASTOS" style="white-space: nowrap;">
+                    <p:menuitem value="Facturas Especiales" url="/procesos/facturas.xhtml" disabled="#{view.viewId eq '/procesos/facturas.xhtml'}" />
+                    <p:menuitem value="Gastos Reales Detalle" url="/procesos/gastos.xhtml" disabled="#{view.viewId eq '/procesos/gastos.xhtml'}" />
+                    <p:menuitem value="Gastos Reales Global" url="/procesos/gastos2.xhtml" disabled="#{view.viewId eq '/procesos/gastos2.xhtml'}" />
+                    <p:separator />
+                    <p:menuitem value="Catálogo de Conceptos" url="/catalogos/conceptos.xhtml" disabled="#{view.viewId eq '/catalogos/conceptos.xhtml'}" />
+                </p:submenu>
+            </p:menu>
+            <p:menu style="width: 160px;">
+                <p:submenu label="Reportes" style="white-space: nowrap;">
+                    <p:menuitem value="Reportes Control" url="/reportes/gastosreales.xhtml" disabled="#{view.viewId eq '#'}" />
+                    <p:separator />
+                    <p:menuitem value="Estado Financiero" url="/reportes/edofin.xhtml" disabled="#{view.viewId eq '/reportes/edofin.xhtml'}" />
+                </p:submenu>
+            </p:menu>
+
+            <h:panelGrid columns="1" style="text-align: center;" width="100%">
+                <p:spacer height="10" />
+                <h:link value="Salir" outcome="/index" />
+            </h:panelGrid>
+        </h:form>
+    </ui:composition>
+</html>
+

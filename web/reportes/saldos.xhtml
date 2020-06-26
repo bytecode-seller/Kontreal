@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+            </f:facet>
+            <title>::: K O N T R E A L :::</title>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+
+            <script type="text/javascript">
+                function filterEvent(filtro) {
+                    if (filtro.substr(4, 4) === "0000") {
+                        filtro = filtro.substr(0, 3);
+                    } else {
+                        filtro = filtro.substr(0, 8);
+                    }
+                    document.getElementById('formTable:balanza:cuenta:filter').value = filtro;
+                }
+            </script>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true">
+
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú" collapsible="true">
+                    <ui:include src="/menu.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center" header="RELACIÓN DE SALDOS">
+                    <h:form id="formTable">
+                        <p:dataTable id="saldos" value="#{showSaldosBean.saldosData}" filteredValue="#{showSaldosBean.saldosFilter}"
+                                     var="saldos" widgetVar="widgetTable" emptyMessage="No existen registros con esta condición." >
+                            <f:facet name="header">
+                                <p:outputPanel>
+                                    <p:toolbar id="toolbar">
+                                        <p:toolbarGroup align="left">
+                                            <h:outputText value="Cuenta Contable:" />
+                                            <p:selectOneMenu value="#{showSaldosBean.cuenta}" style="width: 200px;" converter="converterCuentaSaldos">
+                                                <f:selectItems value="#{showSaldosBean.cuentasConverter}" />
+                                                <p:ajax event="change" listener="#{showSaldosBean.listenerParams()}" update="saldos"/>
+                                            </p:selectOneMenu>
+                                            <p:spacer height="0" width="5"/>
+                                            <h:outputText value="Del Ejercicio"/>
+                                            <p:spacer height="0" width="5"/>
+                                            <p:selectOneMenu value="#{showSaldosBean.ejercicio}" style="width: 75px;">
+                                                <f:selectItems value="#{showSaldosBean.ejercicios}" />
+                                                <p:ajax event="change" listener="#{showSaldosBean.listenerParams()}" oncomplete="PF('widgetTable').filter();"/>
+                                            </p:selectOneMenu>
+                                        </p:toolbarGroup>
+                                        <p:toolbarGroup align="right">
+                                            <p:commandButton value="Quitar Filtros" icon="ui-icon-zoomout" process="@this" onclick="PF('widgetTable').clearFilters();"/>
+                                            <p:separator/>
+                                            <p:commandButton value="Compatir" icon="ui-icon-person" process="@this" oncomplete="PF('widgetView').show();"/>
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
+                                </p:outputPanel>
+                            </f:facet>
+
+                            <f:facet name="footer" >
+                                <p:outputLabel value=""/>
+                            </f:facet>
+
+                            <p:column headerText="Empresa" width="12%" sortBy="#{saldos.cuenta.empresa.nombre}" filterBy="#{saldos.cuenta.empresa.nombre}" 
+                                      filterMatchMode="startsWith" filterStyle="width: 60px" rendered="#{sessionBean.selectedEmpresa eq null}">
+                                <h:outputText value="#{saldos.cuenta.empresa.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Nivel" width="6%" style="text-align: center;">
+                                <h:outputText value="#{saldos.cuenta.nivel}"/>
+                            </p:column>
+                            <p:column id="cuenta" headerText="Cuenta" width="13%">
+                                <p:commandLink value="#{saldos.cuenta.cuenta}" rendered="#{saldos.cuenta.nivel eq 2 or saldos.cuenta.nivel eq 3}"
+                                               onstart="filterEvent('#{saldos.cuenta.cuenta}'), PF('widgetTable').filter();" style="color: chocolate;"/>
+                                <h:outputText value="#{saldos.cuenta.cuenta}" rendered="#{saldos.cuenta.nivel lt 2 or saldos.cuenta.nivel gt 3}"/>
+                            </p:column>
+                            <p:column headerText="Nombre" width="17%">
+                                <h:outputText value="#{saldos.cuenta.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Saldo Inicial" style="text-align: right;" width="11%">
+                                <h:outputText value="#{saldos.saldoini}">
+                                    <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Cargos" style="text-align: right;" width="11%">
+                                <h:outputText value="#{saldos.cargos}">
+                                    <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Abonos" style="text-align: right;" width="11%">
+                                <h:outputText value="#{saldos.abonos}">
+                                    <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Saldo Final" style="text-align: right;" width="11%">
+                                <h:outputText value="#{saldos.saldofin}">
+                                    <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Mes" width="8%">
+                                <h:outputText value="#{showSaldosBean.convertMonth(saldos.fecha)}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                </p:layoutUnit>
+
+            </p:layout>
+
+        </h:body>
+
+    </f:view>
+</html>
+

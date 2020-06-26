@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 16-may-2015 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+  <class catalog="contabilidad" name="kontreal.entities.Lminicatalogo" optimistic-lock="version" table="lminicatalogo">
+    <id name="idLminicatalogo" type="java.lang.Integer">
+      <column name="id_lminicatalogo"/>
+      <generator class="identity"/>
+    </id>
+    <many-to-one class="kontreal.entities.Minicatalogo" fetch="select" name="minicatalogo">
+      <column name="id_minicatalogo" not-null="true"/>
+    </many-to-one>
+    <property name="cuenta" type="string">
+      <column length="30" name="cuenta" not-null="true"/>
+    </property>
+    <property name="nombre" type="string">
+      <column length="100" name="nombre" not-null="true"/>
+    </property>
+    <property name="tipo" type="string">
+      <column length="1" name="tipo" not-null="true"/>
+    </property>
+    <property name="regexpstr" type="string">
+      <column length="30" name="regexpstr" not-null="true"/>
+    </property>
+    <property name="updated" type="timestamp">
+      <column length="19" name="updated" not-null="true"/>
+    </property>
+  </class>
+</hibernate-mapping>

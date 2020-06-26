@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" >
+
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true">
+
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú" collapsible="true">
+                    <ui:include src="/menu.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center" header="BALANZA MENSUAL">
+                    <h:form id="formTable">
+                        <p:remoteCommand name="refreshFooter" update=":formTable:balanza:totalsGrid"/>
+                        <p:dataTable id="balanza" value="#{showBalanzaBean.balanzasData}" filteredValue="#{showBalanzaBean.balanzasFilter}" var="balanza" scrollHeight="425" scrollable="true" 
+                                     resizableColumns="true" emptyMessage="No existen registros con esta condición." sortBy="#{balanza.cuenta.empresa.nombre}" widgetVar="widgetTable" >
+                            <p:ajax event="sort" listener="#{showBalanzaBean.onSort}"/>
+                            <p:ajax event="filter" listener="#{showBalanzaBean.onFilter()}" oncomplete="refreshFooter();"/>
+                            <!-- p:ajax event="sort" listener="#x{showBalanzaBean.onSort}" onstart="PF('widgetBlocker').show();" oncomplete="PF('widgetBlocker').hide();"/ -->
+                            <!-- p:ajax event="filter" listener="#x{showBalanzaBean.onFilter()}" onstart="PF('widgetBlocker').show();" oncomplete="refreshFooter();PF('widgetBlocker').hide();"/ -->
+                            <f:facet name="header">
+                                <p:toolbar id="toolbar">
+                                    <p:toolbarGroup align="left">
+                                        <p:outputLabel value="Al:&nbsp;"/>
+                                        <p:calendar value="#{showBalanzaBean.fecha}" locale="es" showOn="button" placeholder="Fin de mes..." readonlyInput="true" 
+                                                    navigator="true" styleClass="calendar_inputbox-notime" pattern="yyyy-MMMM-dd" yearRange="c-2:c+0">
+                                            <p:ajax event="dateSelect" listener="#{showBalanzaBean.chooseFecha()}" oncomplete="PF('widgetTable').filter();"/>
+                                        </p:calendar>
+                                        <p:spacer width="5"/>
+                                        <p:separator/>
+                                        <p:spacer width="5"/>
+                                        <p:selectCheckboxMenu label="Grupo Contable" value="#{showBalanzaBean.grupo}" scrollHeight="125" style="vertical-align: middle;">
+                                            <f:selectItems value="#{showBalanzaBean.grupos}" />
+                                            <p:ajax event="change" listener="#{showBalanzaBean.updateGroups()}" oncomplete="PF('widgetTable').filter();"/>
+                                        </p:selectCheckboxMenu>
+                                        <p:spacer width="5"/>
+                                        <p:separator/>
+                                        <p:spacer width="5"/>
+                                        <p:outputLabel value="Mini Catálogo:&nbsp;"/>
+                                        <p:selectOneMenu value="#{showBalanzaBean.selectedMiniCatalogo}" style="width: 150px;vertical-align: middle;">
+                                            <f:selectItems value="#{showBalanzaBean.miniCatalogos}" />
+                                            <p:ajax event="change" listener="#{showBalanzaBean.miniCatalogoListener()}" oncomplete="PF('widgetTable').filter();"/>
+                                        </p:selectOneMenu>
+                                        <p:spacer width="5"/>
+                                        <p:separator/>
+                                        <p:spacer width="5"/>
+                                        <p:outputLabel value="Nivel:&nbsp;"/>
+                                        <p:selectOneMenu value="#{showBalanzaBean.selectedNivel}" style="width: 125px;vertical-align: middle;">
+                                            <f:selectItems value="#{showBalanzaBean.niveles}" />
+                                            <p:ajax event="change" listener="#{showBalanzaBean.nivelListener()}" oncomplete="PF('widgetTable').filter();"/>
+                                        </p:selectOneMenu>
+                                    </p:toolbarGroup>
+
+                                    <p:toolbarGroup align="right">
+                                        <p:commandButton icon="ui-icon-zoomout" process="@this" update="toolbar"
+                                                         actionListener="#{showBalanzaBean.dropFilters()}" oncomplete="PF('widgetTable').clearFilters();"/>
+                                        <p:spacer width="5"/>
+                                        <p:separator/>
+                                        <p:spacer width="5"/>
+                                        <p:commandButton value="Exportar" icon="ui-icon-arrowthick-1-ne" style="width: 120px;" ajax="false">
+                                            <p:dataExporter type="xls" target="balanza" fileName="balanza_mensual"/>
+                                        </p:commandButton>
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+                            </f:facet>
+
+                            <p:column id="empresa" headerText="Empresa" sortBy="#{balanza.cuenta.empresa.nombre}" filterBy="#{balanza.cuenta.empresa.nombre}" filterOptions="#{showBalanzaBean.empresasItems}" 
+                                      filterMatchMode="exact" rendered="#{sessionBean.selectedEmpresa eq null}" width="15%">
+                                <p:outputLabel value="#{balanza.cuenta.empresa.nombre}"/>
+                            </p:column>
+                            <p:column id="tipo" headerText="Grupo" sortBy="#{balanza.cuenta.tipo}" style="text-align: center;" width="8%">
+                                <p:outputLabel value="#{showBalanzaBean.fetchTipoGrupo(balanza.cuenta.tipo)}"/>
+                            </p:column>
+                            <p:column id="nivel" headerText="Nivel" style="text-align: center;" width="6%">
+                                <p:outputLabel value="#{balanza.cuenta.nivel}"/>
+                            </p:column>
+                            <p:column id="cuenta" headerText="Cuenta" sortBy="#{balanza.cuenta.cuenta}" filterBy="#{balanza.cuenta.cuenta}" filterMatchMode="startsWith" filterStyle="width: 50px" width="10%">
+                                <p:outputLabel value="#{balanza.cuenta.cuenta}"/>
+                            </p:column>
+                            <p:column headerText="Nombre" filterBy="#{balanza.cuenta.nombre}" filterMatchMode="contains" filterStyle="width: 75px" width="21%">
+                                <p:outputLabel value="#{balanza.cuenta.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Saldo Inicial" style="text-align: right;" width="10%">
+                                <p:outputLabel id="saldoInicial" value="#{balanza.saldoini}">
+                                    <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Cargos" style="text-align: right;" width="10%">
+                                <p:outputLabel id="cargo" value="#{balanza.cargos}">
+                                    <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Abonos" style="text-align: right;" width="10%">
+                                <p:outputLabel id="abono" value="#{balanza.abonos}">
+                                    <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Saldo Final" style="text-align: right;" width="10%">
+                                <p:outputLabel id="saldoFinal" value="#{balanza.saldofin}">
+                                    <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                </p:outputLabel>
+                            </p:column>
+
+                            <p:summaryRow listener="#{showBalanzaBean.calculateTotals(balanza)}" rendered="#{sessionBean.selectedEmpresa eq null}">
+                                <p:column colspan="5" style="text-align: right;" exportable="false">
+                                    <h:outputLabel value="Totales:"/>
+                                </p:column>
+                                <p:column style="text-align: center;" exportable="false">
+                                    <p:outputLabel value="#{showBalanzaBean.subTotales[0]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column style="text-align: center;" exportable="false">
+                                    <p:outputLabel value="#{showBalanzaBean.subTotales[1]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column style="text-align: center;" exportable="false">
+                                    <p:outputLabel value="#{showBalanzaBean.subTotales[2]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column style="text-align: center;" exportable="false">
+                                    <p:outputLabel value="#{showBalanzaBean.subTotales[3]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                    </p:outputLabel>
+                                </p:column>
+                            </p:summaryRow>
+
+                            <f:facet name="footer">
+                                <h:panelGrid id="totalsGrid" columns="9" style="text-align: right;" styleClass="ui-panelgrid-mine" width="100%">
+                                    <p:spacer/>
+                                    <p:spacer/>
+                                    <p:spacer/>
+                                    <p:spacer/>
+                                    <p:outputLabel value="#{showBalanzaBean.balanzasFilter.size()}">
+                                        <f:convertNumber type="number" pattern="#,##0"/>
+                                    </p:outputLabel>
+                                    <p:outputLabel value="#{showBalanzaBean.totales[0]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                    </p:outputLabel>
+                                    <p:outputLabel value="#{showBalanzaBean.totales[1]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                    </p:outputLabel>
+                                    <p:outputLabel value="#{showBalanzaBean.totales[2]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                    </p:outputLabel>
+                                    <p:outputLabel value="#{showBalanzaBean.totales[3]}">
+                                        <f:convertNumber type="currency" pattern="$&nbsp;#,##0.00;$&nbsp;(#,##0.00)"/>
+                                    </p:outputLabel>
+                                </h:panelGrid>
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                </p:layoutUnit>
+
+            </p:layout>
+
+        </h:body>
+
+    </f:view>
+</html>
+

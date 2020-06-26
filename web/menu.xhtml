@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <ui:composition>
+        <h:form>
+            <p:menu style="width: 160px;">
+                <p:submenu label="#{sessionBean.selectedEmpresa ne null ? sessionBean.selectedEmpresa.nombre : 'Todas Las Empresas'}">
+                    <p:menuitem value="Balanza Mensual" url="/reportes/balanzas.xhtml" disabled="#{view.viewId eq '/reportes/balanzas.xhtml'}" />
+                    <p:menuitem value="Relación de Saldos" url="/reportes/saldos.xhtml" disabled="true" />
+                    <p:menuitem value="Estado de Resultados" url="/reportes/resultados.xhtml" disabled="true" />
+                    <p:separator />
+                    <p:menuitem value="Catálogo de Cuentas" url="/catalogos/cuentas.xhtml" disabled="#{view.viewId eq '/catalogos/cuentas.xhtml'}" />
+                    <p:menuitem value="Mini Catálogo" url="/catalogos/minicuentas.xhtml" disabled="#{view.viewId eq '/catalogos/minicuentas.xhtml'}" />
+                </p:submenu>
+            </p:menu>
+
+            <h:panelGrid columns="1" style="text-align: center;" width="100%">
+                <p:spacer height="10" />
+                <p:commandButton value="Salir" style="width: 120px;" actionListener="#{sessionBean.reset()}" action="/index?faces-redirect=true"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:composition>
+</html>
+

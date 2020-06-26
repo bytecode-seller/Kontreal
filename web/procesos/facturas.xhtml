@@ -1,0 +1,372 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true" widgetVar="widgetLayout">
+
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu2.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center">
+                    <p:growl id="growlMess" globalOnly="true" showDetail="true" />
+                    <h:form id="formData">
+                        <p:panel header="FACTURAS ESPECIALES">
+                            <p:panelGrid style="width: 100%" styleClass="ui-panelgrid-mine">
+                                <p:row>
+                                    <p:column colspan="5" style="text-align: center;">
+                                        <h:outputText value="F A C T U R A&nbsp;&nbsp;&nbsp;E S P E C I A L" style="font-size: larger;font-weight: bold;" />
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:spacer height="5"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Empresa:" title="Empresa que adquiere y paga la factura." />
+                                    </p:column>
+                                    <p:column style="width: 240px;">
+                                        <p:selectOneMenu id="empresa" value="#{facturasBean.factura.empresa}" style="width: 225px" required="true" requiredMessage="Selecciona una empresa."
+                                                         converter="converterEmpresaFactura">
+                                            <f:selectItems value="#{facturasBean.empresasConverter}"/>
+                                            <p:ajax event="valueChange" listener="#{facturasBean.empresaListener()}" update="concepto documentos acumulado utilizado disponible" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column style="width: 225px;">
+                                        <p:message for="empresa" />
+                                    </p:column>
+                                    <p:column colspan="2" />
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:spacer height="5"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:separator />
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:spacer height="5"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Fecha:" title="Fecha de emisión de la factura." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:calendar value="#{facturasBean.factura.fecha}" locale="es" navigator="true"  pattern="yyyy-MM-dd"/>
+                                    </p:column>
+                                    <p:column />
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Facturas:" title="Total de facturas adquiridas por la empresa seleccionada." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="documentos" value="#{facturasBean.documentos}" style="text-align: right;" readonly="true" />
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Factura:" title="Folio del documento, incluida la serie." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="factura" value="#{facturasBean.factura.folio}" required="true" requiredMessage="Ingresa el folio de la factura."
+                                                     onchange="this.value = this.value.toUpperCase();" />
+                                    </p:column>
+                                    <p:column style="width: 225px;">
+                                        <p:message for="factura" />
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Acumulado:" title="Monto acumulado por todas las facturas adquiridas, incluido impuesto, en esta empresa." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="acumulado" value="#{facturasBean.acumulado}" style="text-align: right;" readonly="true">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Emisor:" title="R.F.C. del emisor de la factura." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu id="emisor" value="#{facturasBean.factura.rfc}" editable="true" required="true" requiredMessage="Ingresa el RFC del emisor."
+                                                         onchange="this.value = this.value.toUpperCase();" validator="#{validatorBean.validateRFC}">
+                                            <f:selectItems value="#{facturasBean.emisores}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column style="width: 225px;">
+                                        <p:message for="emisor" />
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Utilizado:" title="Monto total que se ha destinado para gastos o transferencias a otras empresas." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="utilizado" value="#{facturasBean.utilizado}" style="text-align: right;" readonly="true">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Importe:" title="Importe bruto antes de impuesto." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="importe" value="#{facturasBean.factura.importebruto}" autocomplete="false" style="text-align: right;" required="true"
+                                                     requiredMessage="Ingresa el monto de la factura.">
+                                            <p:ajax event="change" listener="#{facturasBean.importeListener()}" update="@this iva total"/>
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                    <p:column style="width: 225px;">
+                                        <p:message for="importe" />
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Disponible:" title="Importe remanete útil en espera de destino final." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="disponible" value="#{facturasBean.disponible}" style="text-align: right;" readonly="true">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                </p:row>
+
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Retención:" title="Retención 4% del IVA." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectBooleanCheckbox value="#{facturasBean.conRetencion}">
+                                            <p:ajax event="change" listener="#{facturasBean.importeListener()}" update="@this iva total"/>
+                                        </p:selectBooleanCheckbox>
+                                    </p:column>
+                                    <p:column colspan="3" />
+                                </p:row>
+
+
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="IVA:" title="Impuesto" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="iva" value="#{facturasBean.factura.importeiva}" style="text-align: right;" readonly="true">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                    <p:column colspan="3" />
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Total:" title="Importe total de la factura." />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="total" value="#{facturasBean.factura.importe}" style="text-align: right;" readonly="true">
+                                            <f:convertNumber type="currency" pattern="#,##0.00"/>
+                                        </p:inputText>
+                                    </p:column>
+                                    <p:column colspan="3" />
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Concepto:" title="Breve descripción del producto o servicio que se especifica en la factura, debe darse de alta previamente." />
+                                    </p:column>
+                                    <p:column style="width: 240px;">
+                                        <p:selectOneMenu id="concepto" value="#{facturasBean.factura.concepto}" style="width: 225px;" required="true"
+                                                         requiredMessage="Selecciona un concepto de origen." converter="converterConcepto">
+                                            <f:selectItems value="#{facturasBean.conceptosConverter}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column style="width: 225px;">
+                                        <p:message for="concepto" />
+                                    </p:column>
+                                    <p:column colspan="2" />
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:spacer height="10"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column style="text-align: right;">
+                                        <h:outputText value="Observación:" title="Cualquier elemento informativo, nota, recordatorio o justificación que sea necesario incluir en esta factura." />
+                                    </p:column>
+                                    <p:column colspan="4">
+                                        <p:inputTextarea value="#{facturasBean.factura.comentario}" style="width: 99%" maxlength="500" autoResize="false"
+                                                         onchange="this.value = this.value.toUpperCase();"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="5">
+                                        <p:spacer height="5"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+
+                            <p:separator/>
+
+                            <h:panelGrid id="buttons" columns="2" width="100%" style="text-align: center;" >
+                                <p:commandButton value="Cancelar" icon="ui-icon-close" style="width: 105px;" process="@this" actionListener="#{facturasBean.cancelarListener()}"
+                                                 update="@form :formTable" title="Cancelar el registro actual y limpiar el formulario.">
+                                    <p:resetInput target="formData" />
+                                </p:commandButton>
+                                <p:commandButton value="Aceptar" icon="ui-icon-check" style="width: 105px;" actionListener="#{facturasBean.aceptarListener()}"
+                                                 update="@form :formTable :growlMess" title="Validar y guardar el registro actual." />
+                            </h:panelGrid>
+                        </p:panel>
+                    </h:form>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="east" header="FACTURAS ESPECIALES REGISTRADAS" size="100%" collapsible="true" collapsed="true">
+                    <h:form id="formTable">
+                        <p:dataTable id="dataTable"  widgetVar="widgetTable" value="#{facturasBean.facturasData}" filteredValue="#{facturasBean.facturasFilter}" var="fac"
+                                     rowKey="#{fac.idFactura}" selection="#{facturasBean.selectedFactura}" selectionMode="single" scrollable="true" scrollHeight="420"
+                                     emptyMessage="No existen facturas.">
+                            <p:ajax event="rowSelect" update="eliminar modificar" />
+                            <f:facet name="header">
+                                <p:outputPanel>
+                                    <p:toolbar id="toolbar">
+                                        <p:toolbarGroup align="left">
+                                            <h:outputText value="Desde:&nbsp;"/>
+                                            <p:calendar value="#{facturasBean.desde}" locale="es" navigator="true" styleClass="calendar_inputbox" pattern="yyyy-MM-dd">
+                                                <p:ajax event="dateSelect" listener="#{facturasBean.fechasListener()}" update="@form :formData" oncomplete="PF('widgetTable').filter();"/>
+                                            </p:calendar>
+                                            <p:spacer width="10"/>
+                                            <h:outputText value="Hasta:&nbsp;"/>
+                                            <p:calendar value="#{facturasBean.hasta}" locale="es" navigator="true" styleClass="calendar_inputbox" pattern="yyyy-MM-dd">
+                                                <p:ajax event="dateSelect" listener="#{facturasBean.fechasListener()}" update="@form :formData" oncomplete="PF('widgetTable').filter();"/>
+                                            </p:calendar>
+                                        </p:toolbarGroup>
+                                        <p:toolbarGroup align="right">
+                                            <p:commandButton value="Quitar Filtros" icon="ui-icon-zoomout" process="@this" actionListener="#{facturasBean.dropFilters()}"
+                                                             update="@form :formData" oncomplete="PF('widgetTable').clearFilters();"/>
+                                            <p:separator/>
+                                            <p:commandButton id="eliminar" value="Eliminar" icon="ui-icon-trash" process="@this" disabled="#{facturasBean.selectedFactura eq null}"
+                                                             update=":displayEliminate" oncomplete="PF('widgetEliminate').show();"/>
+                                            <p:separator/>
+                                            <p:commandButton id="modificar" value="Modificar" icon="ui-icon-pencil" process="@this" disabled="#{facturasBean.selectedFactura eq null}"
+                                                             actionListener="#{facturasBean.chooseModify()}" update=":formData"  oncomplete="PF('widgetLayout').toggle('east');" />
+                                            <p:separator/>
+                                            <p:commandButton value="Compatir" icon="ui-icon-person" process="@this" onclick="PF('widgetView').show();"/>
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
+                                </p:outputPanel>
+                            </f:facet>
+                            <f:facet name="footer">
+                                <h:outputText value="Facturas: #{facturasBean.facturasData.size()}"/>
+                            </f:facet>
+
+                            <p:column headerText="Fecha" sortBy="#{fac.fecha}">
+                                <h:outputText value="#{fac.fecha}">
+                                    <f:convertDateTime timeZone="America/Mexico_City" type="date" dateStyle="short" timeStyle="short" pattern="yyyy-MM-dd"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Empresa" sortBy="#{fac.empresa}" filterBy="#{fac.empresa}" filterMatchMode="startsWith" filterStyle="width:50px">
+                                <h:outputText value="#{fac.empresa}"/>
+                            </p:column>
+                            <p:column headerText="Factura" sortBy="#{fac.rfc}" filterBy="#{fac.rfc}" filterMatchMode="startsWith" filterStyle="width:50px">
+                                <h:outputText value="#{fac}"/>
+                            </p:column>
+                            <p:column headerText="Concepto" sortBy="#{fac.concepto}" filterBy="#{fac.concepto}" filterMatchMode="startsWith" filterStyle="width:50px">
+                                <h:outputText value="#{fac.concepto}"/>
+                            </p:column>
+                            <p:column headerText="Importe" style="text-align: right;">
+                                <h:outputText value="#{fac.importebruto}">
+                                    <f:convertNumber type="currency" pattern="$ #,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="IVA" style="text-align: right;">
+                                <h:outputText value="#{fac.importeiva}">
+                                    <f:convertNumber type="currency" pattern="$ #,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Total" style="text-align: right;">
+                                <h:outputText value="#{fac.importe}">
+                                    <f:convertNumber type="currency" pattern="$ #,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Utilizado" style="text-align: right;">
+                                <h:outputText value="#{fac.importeutilizado}">
+                                    <f:convertNumber type="currency" pattern="$ #,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Disponible" style="text-align: right;">
+                                <h:outputText value="#{fac.importe - fac.importeutilizado}">
+                                    <f:convertNumber type="currency" pattern="$ #,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                </p:layoutUnit>
+
+            </p:layout>
+
+            <p:confirmDialog id="displayEliminate" header="ELIMINAR FACTURA" widgetVar="widgetEliminate" closable="false">
+                <f:facet name="message">
+                    <p:outputLabel value="¿Estás seguro de eliminar la factura #{facturasBean.selectedFactura.folio}??&#10;&#10;Esta instrucción no puede revertirse." style="white-space: pre-line"/>
+                </f:facet>
+                <h:form>
+                    <h:panelGrid columns="2" width="100%" style="text-align: center;">
+                        <p:commandButton id="submitButton1" value="No, Mejor No" icon="ui-icon-close" style="width: 135px;" process="@this" oncomplete="PF('widgetEliminate').hide();"/>
+                        <p:commandButton value="Sí, Seguro" icon="ui-icon-check" style="width: 135px;" actionListener="#{facturasBean.eliminarListener()}"
+                                         update=":formTable :growlMess" oncomplete="PF('widgetEliminate').hide();"/>
+                    </h:panelGrid>
+                    <p:defaultCommand target="submitButton1"/>
+                </h:form>
+            </p:confirmDialog>
+
+            <p:dialog header="COMPARTIR FACTURAS" widgetVar="widgetView" resizable="false" closable="false" modal="true">
+                <br/>
+                <p:outputLabel value="Selecciona las acciones que desees realizar." />
+                <br/>
+                <p:separator/>
+                <br/>
+                <h:panelGrid columns="1" width="100%">
+                    <p:outputLabel value="Reporte en Formato XLS para Hoja de Cálculo." />
+                </h:panelGrid>
+                <br/>
+                <f:facet name="footer">
+                    <h:form>
+                        <h:panelGrid columns="3" >
+                            <h:commandLink onclick="PF('widgetView').hide();">
+                                <h:graphicImage name="images/excel.png"/>
+                                <p:dataExporter type="xls" target=":formTable:dataTable" fileName="facturas"/>
+                            </h:commandLink>
+                            <p:spacer width="10"/>
+                            <p:commandButton id="submitButton" value="Listo" icon="ui-icon-check" process="@this" onclick="PF('widgetView').hide();"/>
+                        </h:panelGrid>
+                        <p:defaultCommand target="submitButton"/>
+                    </h:form>
+                </f:facet>
+            </p:dialog>
+
+        </h:body>
+
+    </f:view>
+</html>

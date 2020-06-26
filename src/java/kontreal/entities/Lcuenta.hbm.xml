@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 16-may-2015 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="kontreal.entities.Lcuenta" table="lcuenta" catalog="contabilidad" optimistic-lock="version">
+        <id name="idLcuenta" type="java.lang.Integer">
+            <column name="id_lcuenta" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="cuenta" class="kontreal.entities.Cuenta" fetch="select">
+            <column name="id_cuenta" not-null="true" />
+        </many-to-one>
+        <many-to-one name="reporteesp" class="kontreal.entities.Reporteesp" fetch="select">
+            <column name="id_reporteesp" not-null="true" />
+        </many-to-one>
+        <property name="updated" type="timestamp">
+            <column name="updated" length="19" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

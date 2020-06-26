@@ -1,0 +1,324 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true">
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu2.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center">
+                    <h:form id="formTable">
+                        <p:dataTable id="dataTable" value="#{conceptosBean.conceptosData}" filteredValue="#{conceptosBean.conceptosFilter}"
+                                     var="rowdata" widgetVar="widgetTable" scrollHeight="310" scrollable="true"
+                                     rowKey="#{rowdata.idConcepto}" selection="#{conceptosBean.selectedConcepto}" selectionMode="single"
+                                     emptyMessage="No existen registros con esta condición." >
+                            <p:ajax event="rowSelect" update="eliminar modificar" />
+                            <f:facet name="header">
+                                <p:outputLabel value="CATÁLOGO DE CONCEPTOS"/>
+                                <p:outputPanel>
+                                    <p:toolbar id="toolbar">
+                                        <p:toolbarGroup align="right">
+                                            <p:commandButton value="Quitar Filtros" icon="ui-icon-zoomout" process="@this" update="toolbar" oncomplete="PF('widgetTable').clearFilters();"/>
+                                            <p:separator/>
+                                            <p:commandButton value="Crear" icon="ui-icon-contact" process="@this" actionListener="#{conceptosBean.chooseCreate()}"
+                                                             update=":dialogCreate" oncomplete="PF('widgetCreate').show();"/>
+                                            <p:separator/>
+                                            <p:commandButton id="eliminar" value="Eliminar" icon="ui-icon-trash" disabled="#{conceptosBean.selectedConcepto eq null}" process="@this"
+                                                             update=":dialogEliminate" oncomplete="PF('widgetEliminate').show();"/>
+                                            <p:separator/>
+                                            <p:commandButton id="modificar" value="Modificar" icon="ui-icon-pencil" disabled="#{conceptosBean.selectedConcepto eq null}" process="@this"
+                                                             actionListener="#{conceptosBean.chooseModify()}" update=":dialogModify"  oncomplete="PF('widgetModify').show();"/>
+                                            <p:separator/>
+                                            <p:commandButton value="Compatir" icon="ui-icon-person" process="@this" onclick="PF('widgetView').show();" />
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
+                                </p:outputPanel>
+                            </f:facet>
+
+                            <p:column  width="25">
+                                <f:facet name="header">Tipo</f:facet>
+                                <h:outputText value="#{rowdata.codigo eq 0 ? 'Factura' : 'Gasto'}"/>
+                            </p:column>
+
+                            <p:column  width="100">
+                                <f:facet name="header">Empresa</f:facet>
+                                <h:outputText value="#{rowdata.cuenta.empresa}"/>
+                            </p:column>
+
+                            <p:column sortBy="#{rowdata.nombre}" filterBy="#{rowdata.nombre}" filterMatchMode="contains"
+                                      filterStyle="width:50px;font-size: xx-small;" width="125" style="white-space: nowrap;">
+                                <f:facet name="header">Concepto</f:facet>
+                                <h:outputText value="#{rowdata.nombre}"/>
+                            </p:column>
+
+                            <p:column  width="100">
+                                <f:facet name="header">Cuenta</f:facet>
+                                <h:outputText value="#{rowdata.cuenta.cuenta}"/>
+                            </p:column>
+
+                            <p:column  width="150">
+                                <f:facet name="header">Descripción Cuenta</f:facet>
+                                <h:outputText value="#{rowdata.cuenta.nombre}"/>
+                            </p:column>
+
+                            <p:column sortBy="#{rowdata.updated}" width="85">
+                                <f:facet name="header">Actualización</f:facet>
+                                <h:outputText value="#{rowdata.updated}">
+                                    <f:convertDateTime timeZone="America/Mexico_City" type="both" dateStyle="short" timeStyle="short" pattern="yyyy-MM-dd HH:mm"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <f:facet name="footer">
+                                <h:outputText value="Total Conceptos: #{conceptosBean.conceptosData.size()}" />
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                    <p:growl id="growlMess" globalOnly="true" showDetail="true" />
+                </p:layoutUnit>
+
+            </p:layout>
+
+            <p:dialog id="dialogCreate" header="CREAR CONCEPTO" modal="true" closable="false" resizable="false" widgetVar="widgetCreate">
+                <p:spacer height="15"/>
+                <h:form>
+                    <p:panelGrid styleClass="ui-panelgrid-mine">
+                        <p:row>
+                            <p:column style="text-align: right;white-space: nowrap;">
+                                <h:outputText value="¿Factura o Gasto?:" title="Uso que se dará a este concepto, el cual puede ser para describir el origen de una Factura o el destino de un Gasto." />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneButton value="#{conceptosBean.concepto.codigo}">
+                                    <f:selectItem itemLabel="Factura" itemValue="0"/>
+                                    <f:selectItem itemLabel="Gasto" itemValue="1"/>
+                                    <p:ajax event="change" update="titulonombre tituloempresa titulocuenta" />
+                                </p:selectOneButton>
+                                <h:outputText value="Verde indica 'Seleccionado'." />
+                            </p:column>
+                            <p:column/>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:separator />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText id="titulonombre" value="Nombre:" title="Breve descripción del producto o servicio #{conceptosBean.concepto.codigo eq 0 ? 'que se especifica en una factura' : 'al que hace referencia un gasto'}." />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="nombre" value="#{conceptosBean.concepto.nombre}" required="true" requiredMessage="Ingresa un nombre de concepto." size="46"
+                                             onchange="this.value = this.value.toUpperCase();" />
+                            </p:column>
+                            <p:column style="width: 250px;">
+                                <p:message for="nombre" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText id="tituloempresa" value="Empresa:" title="Empresa que hará uso de este concepto para calificar #{conceptosBean.concepto.codigo eq 0 ? 'una factura' : 'un gasto'}." />
+                            </p:column>
+                            <p:column style="width: 240px;">
+                                <p:selectOneMenu id="empresa" value="#{conceptosBean.selectedEmpresa}" style="width: 225px" required="true" requiredMessage="Selecciona una empresa."
+                                                 converter="converterEmpresaConcepto">
+                                    <f:selectItems value="#{conceptosBean.empresasConverter}"/>
+                                    <p:ajax event="valueChange" listener="#{conceptosBean.empresaListener()}" update="cuenta" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column style="width: 250px;">
+                                <p:message for="empresa" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText id="titulocuenta" value="Cuenta Contable:" title="Seleccionada del catálogo de cuentas de la empresa que #{conceptosBean.concepto.codigo eq 0 ? 'adquiere y paga una factura, será utilizada para contabilizar la cancelación del gasto especificado por dicha factura' : 'genera y liquida un gasto, será utilizada para contabilizar dicho gasto'}." />
+                            </p:column>
+                            <p:column style="width: 290px;">
+                                <p:selectOneMenu id="cuenta" value="#{conceptosBean.concepto.cuenta}" filter="true" filterMatchMode="contains" style="width: 275px;"
+                                                 required="true" requiredMessage="Selecciona una cuenta contable." converter="converterCuentaConcepto">
+                                    <f:selectItems value="#{conceptosBean.cuentasConverter}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column style="width: 250px;">
+                                <p:message for="cuenta" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:separator />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                    <p:spacer height="10"/>
+
+                    <h:panelGrid columns="2" width="100%" style="text-align: center;">
+                        <p:commandButton id="submitButton1" value="Cancelar" icon="ui-icon-close" style="width: 135px;" process="@this" onclick="PF('widgetCreate').hide();"
+                                         title="Cancelar el registro actual.">
+                            <p:resetInput target="@form" />
+                        </p:commandButton>
+                        <p:commandButton value="Aceptar" icon="ui-icon-check" style="width: 135px;" update="@form :formTable :growlMess" actionListener="#{conceptosBean.applyInsert()}"
+                                         oncomplete="if(!args.validationFailed){widgetCreate.hide();}" title="Validar y guardar el registro actual."/>
+                    </h:panelGrid>
+                    <p:defaultCommand target="submitButton1" />
+                </h:form>
+                <p:spacer height="15"/>
+            </p:dialog>
+
+            <p:dialog id="dialogModify" header="MODIFICAR CONCEPTO" modal="true" closable="false" resizable="false" widgetVar="widgetModify">
+                <p:spacer height="15"/>
+                <h:form>
+                    <p:panelGrid styleClass="ui-panelgrid-mine">
+                        <p:row>
+                            <p:column style="text-align: right;white-space: nowrap;">
+                                <h:outputText value="¿Factura o Gasto?:" title="Uso que se dará a este concepto, el cual puede ser para describir el origen de una Factura o el destino de un Gasto." />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneButton value="#{conceptosBean.selectedConcepto.codigo}" disabled="true">
+                                    <f:selectItem itemLabel="Factura" itemValue="0"/>
+                                    <f:selectItem itemLabel="Gasto" itemValue="1"/>
+                                </p:selectOneButton>
+                                <h:outputText value="Verde indica 'Seleccionado'." />
+                            </p:column>
+                            <p:column />
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:separator />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText value="Nombre:" title="Breve descripción del producto o servicio #{conceptosBean.selectedConcepto.codigo eq 0 ? 'que se especifica en una factura' : 'al que hace referencia un gasto'}." />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="nombre" value="#{conceptosBean.selectedConcepto.nombre}" size="46" onchange="this.value = this.value.toUpperCase();" required="true"
+                                             requiredMessage="Ingresa un nombre de concepto." />
+                            </p:column>
+                            <p:column style="width: 225px;">
+                                <p:message for="nombre" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText value="Empresa:" title="Empresa que hará uso de este concepto para calificar #{conceptosBean.selectedConcepto.codigo eq 0 ? 'una factura' : 'un gasto'}." />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{conceptosBean.selectedConcepto.cuenta.empresa}" readonly="true" />
+                            </p:column>
+                            <p:column />
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText value="Cuenta Contable:" title="Seleccionada del catálogo de cuentas de la empresa que #{conceptosBean.selectedConcepto.codigo eq 0 ? 'adquiere y paga una factura, será utilizada para contabilizar la cancelación del gasto especificado por dicha factura' : 'genera y liquida un gasto, será utilizada para contabilizar dicho gasto'}." />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="cuenta" value="#{conceptosBean.selectedConcepto.cuenta}" filter="true" filterMatchMode="contains" style="width: 300px;"
+                                                 required="true" requiredMessage="Selecciona una cuenta contable." converter="converterCuentaConcepto">
+                                    <f:selectItems value="#{conceptosBean.cuentasConverter}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column style="width: 225px;">
+                                <p:message for="cuenta" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText value="Actualización:" title="Fecha de modificación del concepto." />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{conceptosBean.selectedConcepto.updated}" readonly="true">
+                                    <f:convertDateTime timeZone="America/Mexico_City" type="both" dateStyle="short" timeStyle="short" pattern="yyyy-MM-dd HH:mm"/>
+                                </p:inputText>
+                            </p:column>
+                            <p:column />
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                <p:separator />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                    <p:spacer height="10"/>
+
+                    <h:panelGrid columns="2" width="100%" style="text-align: center;">
+                        <p:commandButton id="submitButton1" value="Cancelar" icon="ui-icon-close" style="width: 105px;" process="@this" onclick="PF('widgetModify').hide();"
+                                         title="Cancelar el registro actual.">
+                            <p:resetInput target="@form" />
+                        </p:commandButton>
+                        <p:commandButton value="Aceptar" icon="ui-icon-check" style="width: 105px;" update="@form :formTable :growlMess" actionListener="#{conceptosBean.applyEdit()}"
+                                         oncomplete="if(!args.validationFailed){widgetModify.hide();}" title="Validar y guardar el registro actual."/>
+                    </h:panelGrid>
+                    <p:defaultCommand target="submitButton1" />
+                </h:form>
+                <p:spacer height="15"/>
+            </p:dialog>
+
+            <p:confirmDialog id="dialogEliminate" header="ELIMINAR CONCEPTO" widgetVar="widgetEliminate" closable="false">
+                <f:facet name="message">
+                    <p:outputLabel value="¿Estás seguro de eliminar el concepto ''#{conceptosBean.selectedConcepto.nombre}''?&#10;&#10;Esta instrucción no puede revertirse." style="white-space: pre-line"/>
+                </f:facet>
+                <h:form>
+                    <h:panelGrid columns="2" width="100%" style="text-align: center;">
+                        <p:commandButton id="submitButton1" value="No, Mejor No" icon="ui-icon-close" style="width: 135px;" process="@this" onclick="PF('widgetEliminate').hide();"/>
+                        <p:commandButton value="Sí, Seguro" icon="ui-icon-check" style="width: 135px;" actionListener="#{conceptosBean.applyDelete()}"
+                                         update=":formTable :growlMess" oncomplete="PF('widgetEliminate').hide();"/>
+                    </h:panelGrid>
+                    <p:defaultCommand target="submitButton1"/>
+                </h:form>
+            </p:confirmDialog>
+
+            <p:dialog header="COMPARTIR CONCEPTOS" widgetVar="widgetView" resizable="false" closable="false" modal="true">
+                <br/>
+                <p:outputLabel value="Selecciona las acciones que desees realizar." />
+                <br/>
+                <p:separator/>
+                <br/>
+                <h:panelGrid columns="1" width="100%">
+                    <p:outputLabel value="Reporte en Formato XLS para Hoja de Cálculo." />
+                </h:panelGrid>
+                <br/>
+                <f:facet name="footer">
+                    <h:form>
+                        <h:panelGrid columns="3" >
+                            <h:commandLink onclick="PF('widgetView').hide();">
+                                <h:graphicImage name="images/excel.png"/>
+                                <p:dataExporter type="xls" target=":formTable:dataTable" fileName="conceptos"/>
+                            </h:commandLink>
+                            <p:spacer width="10"/>
+                            <p:commandButton id="submitButton" value="Listo" icon="ui-icon-check" process="@this" onclick="PF('widgetView').hide();"/>
+                        </h:panelGrid>
+                        <p:defaultCommand target="submitButton"/>
+                    </h:form>
+                </f:facet>
+            </p:dialog>
+
+        </h:body>
+
+    </f:view>
+</html>
+

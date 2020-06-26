@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <f:facet name="first">
+            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            <title>::: K O N T R E A L :::</title>
+        </f:facet>
+
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <p:spacer height="50"/>
+        <h:panelGrid columns="3" style="text-align: center;" width="100%">
+            <p:spacer width="175"/>
+            <p:panel>
+                <h:panelGrid columns="1" style="text-align: center;" width="100%">
+                    <p:spacer height="10" />
+                    <h:graphicImage url="/resources/images/kontreal_titulo.png" />
+                    <p:spacer height="30" />
+                    <h:graphicImage url="/resources/images/kontreal.png" />
+                    <p:spacer height="30" />
+                    <h:form>
+                        <p:commandButton value="Ingresar" style="width: 120px;" action="consultas"/>
+                    </h:form>
+                    <p:spacer height="10" />
+                    <p:separator />
+                    <p:spacer height="10" />
+                    <h:form>
+                        <p:commandButton value="Gastos" style="width: 120px;" action="consultas2"/>
+                    </h:form>
+                    <p:spacer height="10" />
+                </h:panelGrid>
+            </p:panel>
+            <p:spacer width="175"/>
+        </h:panelGrid>
+    </h:body>
+</html>
+

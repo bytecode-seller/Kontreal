@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 16-may-2015 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="kontreal.entities.Reporteesp" table="reporteesp" catalog="contabilidad" optimistic-lock="version">
+        <id name="idReporteesp" type="java.lang.Integer">
+            <column name="id_reporteesp" />
+            <generator class="identity" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="nombre" length="30" not-null="true" />
+        </property>
+        <property name="descripcion" type="string">
+            <column name="descripcion" length="100" />
+        </property>
+        <property name="updated" type="timestamp">
+            <column name="updated" length="19" not-null="true" />
+        </property>
+        <set name="lcuentas" table="lcuenta" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_reporteesp" not-null="true" />
+            </key>
+            <one-to-many class="kontreal.entities.Lcuenta" />
+        </set>
+    </class>
+</hibernate-mapping>

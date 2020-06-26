@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 16-may-2015 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="kontreal.entities.Factura" table="factura" catalog="contabilidad" optimistic-lock="version">
+        <id name="idFactura" type="java.lang.Integer">
+            <column name="id_factura" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="concepto" class="kontreal.entities.Concepto" fetch="select">
+            <column name="id_concepto" not-null="true" />
+        </many-to-one>
+        <many-to-one name="empresa" class="kontreal.entities.Empresa" fetch="select">
+            <column name="id_empresa" not-null="true" />
+        </many-to-one>
+        <property name="fecha" type="date">
+            <column name="fecha" length="10" not-null="true" />
+        </property>
+        <property name="rfc" type="string">
+            <column name="rfc" length="30" not-null="true" />
+        </property>
+        <property name="folio" type="string">
+            <column name="folio" length="30" not-null="true" />
+        </property>
+        <property name="importebruto" type="double">
+            <column name="importebruto" precision="12" not-null="true" />
+        </property>
+        <property name="factoriva" type="double">
+            <column name="factoriva" precision="5" not-null="true" />
+        </property>
+        <property name="importeiva" type="double">
+            <column name="importeiva" precision="12" not-null="true" />
+        </property>
+        <property name="importe" type="double">
+            <column name="importe" precision="12" not-null="true" />
+        </property>
+        <property name="importeutilizado" type="double">
+            <column name="importeutilizado" precision="12" not-null="true" />
+        </property>
+        <property name="comentario" type="string">
+            <column name="comentario" length="500" />
+        </property>
+        <property name="updated" type="timestamp">
+            <column name="updated" length="19" not-null="true" />
+        </property>
+        <set name="gastos" table="gasto" cascade="all-delete-orphan" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_factura" not-null="true" />
+            </key>
+            <one-to-many class="kontreal.entities.Gasto" />
+        </set>
+    </class>
+</hibernate-mapping>

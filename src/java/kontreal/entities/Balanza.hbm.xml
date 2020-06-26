@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 16-may-2015 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="kontreal.entities.Balanza" table="balanza" catalog="contabilidad" optimistic-lock="version">
+        <id name="idBalanza" type="java.lang.Integer">
+            <column name="id_balanza" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="cuenta" class="kontreal.entities.Cuenta" fetch="select">
+            <column name="id_cuenta" not-null="true" />
+        </many-to-one>
+        <property name="saldoini" type="java.lang.Double">
+            <column name="saldoini" precision="12" />
+        </property>
+        <property name="cargos" type="java.lang.Double">
+            <column name="cargos" precision="12" />
+        </property>
+        <property name="abonos" type="java.lang.Double">
+            <column name="abonos" precision="12" />
+        </property>
+        <property name="saldofin" type="java.lang.Double">
+            <column name="saldofin" precision="12" />
+        </property>
+        <property name="fecha" type="date">
+            <column name="fecha" length="10" not-null="true" />
+        </property>
+        <property name="updated" type="timestamp">
+            <column name="updated" length="19" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

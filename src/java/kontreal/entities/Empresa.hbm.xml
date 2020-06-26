@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 16-may-2015 17:28:00 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="kontreal.entities.Empresa" table="empresa" catalog="contabilidad" optimistic-lock="version">
+        <id name="idEmpresa" type="java.lang.Integer">
+            <column name="id_empresa" />
+            <generator class="identity" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="nombre" length="60" />
+        </property>
+        <property name="descripcion" type="string">
+            <column name="descripcion" length="90" />
+        </property>
+        <property name="updated" type="timestamp">
+            <column name="updated" length="19" not-null="true" />
+        </property>
+        <set name="facturas" table="factura" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_empresa" not-null="true" />
+            </key>
+            <one-to-many class="kontreal.entities.Factura" />
+        </set>
+        <set name="gastos" table="gasto" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_empresa" not-null="true" />
+            </key>
+            <one-to-many class="kontreal.entities.Gasto" />
+        </set>
+        <set name="cuentas" table="cuenta" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_empresa" not-null="true" />
+            </key>
+            <one-to-many class="kontreal.entities.Cuenta" />
+        </set>
+    </class>
+</hibernate-mapping>
