@@ -100,4 +100,13 @@ public class CuentaDao {
                 + "order by c.cuenta").setEntity("emp", empresa).list();
     }
 
+    public static Cuenta searchByCuentaAndEmpresa(String cuenta, String empresa){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        return (Cuenta)session.createQuery("from Cuenta c where c.cuenta = :cue and c.empresa.nombre = :emp")
+                .setString("cue", cuenta)
+                .setString("emp", empresa)
+                .uniqueResult();
+    }
 }

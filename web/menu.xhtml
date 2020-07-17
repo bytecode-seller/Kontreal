@@ -8,10 +8,7 @@
             <p:menu style="width: 160px;">
                 <p:submenu label="#{sessionBean.selectedEmpresa ne null ? sessionBean.selectedEmpresa.nombre : 'Todas Las Empresas'}">
                     <p:menuitem value="Balanza Mensual" url="/reportes/balanzas.xhtml" disabled="#{view.viewId eq '/reportes/balanzas.xhtml'}" />
-                    <p:menuitem onclick="return true;">
-                        <p:fileUpload value="#{archivoBean.file}" label="Elegir archivo" fileLimit="1" fileLimitMessage="Solo se permite un archivo"  
-                                      uploadLabel="Subir achivo" fileUploadListener="#{archivoBean.handleFileUpload}" skinSimple="true" />
-                    </p:menuitem>
+                    <p:menuitem url="/balanzaArchivo.xhtml" disabled="#{view.viewId eq '/balanzaArchivo.xhtml'}" value="Subir archivo balanza" />
                     <p:menuitem value="Relación de Saldos" url="/reportes/saldos.xhtml" disabled="true" />
                     <p:menuitem value="Estado de Resultados" url="/reportes/resultados.xhtml" disabled="true" />
                     <p:separator />
@@ -22,8 +19,8 @@
             <h:panelGrid columns="1" style="text-align: center;" width="100%">
                 <p:spacer height="10" />
                 <p:commandButton value="Salir" style="width: 120px;" actionListener="#{sessionBean.reset()}" action="/index?faces-redirect=true"/>
-                <p:growl id="msg" for="myGrowl"  showDetail="true" sticky="true" />
             </h:panelGrid>
+            
         </h:form>
     </ui:composition>
 </html>

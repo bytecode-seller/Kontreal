@@ -114,4 +114,11 @@ public class BalanzaDao {
         Session session = HibernateUtil.getSession();
         return session.createQuery("select distinct YEAR(b.fecha) from Balanza b order by 1 asc").list();
     }
+    
+    public static void insert(Balanza balanza) {
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        session.save(balanza);
+    }
 }
