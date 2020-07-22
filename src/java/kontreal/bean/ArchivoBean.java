@@ -28,7 +28,6 @@ import kontreal.util.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.primefaces.component.growl.Growl;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -55,11 +54,11 @@ public class ArchivoBean implements Serializable{
     }
     
     private UploadedFile file;
-    private Growl growl;
     private Date fechaBalanza;
     private String empresa;
     private Integer numRegistros;
     private boolean fileUploaded;
+    private ArrayList<Balanza> registrosBalanza = new ArrayList<>();
 
     public boolean isFileUploaded() {
         return fileUploaded;
@@ -79,14 +78,6 @@ public class ArchivoBean implements Serializable{
     public void setFile(UploadedFile file) {
         this.file = file;
     }
-    
-    public Growl getGrowl(){
-        return this.growl;
-    }
-    
-    public void setGrowl(Growl growl){
-        this.growl = growl;
-    }
 
     public Date getFechaBalanza() {
         return fechaBalanza;
@@ -104,7 +95,7 @@ public class ArchivoBean implements Serializable{
         this.numRegistros = numRegistros;
     }
     
-    public void handleFileUpload(FileUploadEvent event) throws IOException {
+    public void handleFileUpload(FileUploadEvent event){
         
         FacesContext context = FacesContext.getCurrentInstance();
         file = event.getFile();
@@ -126,14 +117,11 @@ public class ArchivoBean implements Serializable{
             System.out.println("Error al convertir archivo a texto");
         }
         //Se  filtran y validan los datos
-        ArrayList<Balanza> registrosBalanza = new ArrayList<>();
         try {
-            registrosBalanza.addAll(filterDataFromHtml(htmlString));
+            filterDataFromHtml(htmlString);
             ///Guardar datos
-            save(registrosBalanza);
-            context.addMessage("documento", new FacesMessage(FacesMessage.SEVERITY_INFO, "Carga exitosa!", "Tu archivo fue cargado con exito") );
-            this.setFileUploaded(true);
-            //FacesContext.getCurrentInstance().getApplication().getNavigationHandler().handleNavigation(FacesContext.getCurrentInstance(), null, "/infoArchivo.xhtml?faces-redirect=true");
+            RequestContext reqContext = RequestContext.getCurrentInstance();
+            reqContext.execute("PF('confirmDialog').show();");
         }catch(DateTimeException dte){
             context.addMessage("documento", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error en la validacion de datos", dte.getMessage()));
         }catch (Exception ex) {
@@ -189,8 +177,11 @@ public class ArchivoBean implements Serializable{
         else
             this.fechaBalanza = date;
         
+        if (BalanzaDao.isUpload(date, empresa))
+            throw new DateTimeException("La balanza de comprobacion para este mes ya fue cargada en la base de datos");
+        else
+            this.fechaBalanza = date;
         Balanza b = null;
-        ArrayList<Balanza> registrosBalanza = new ArrayList<>();
         Cuenta c  = null;
         Map<String, String> cuentasNoRegistradas = new HashMap<String,String>();
         
@@ -231,12 +222,15 @@ public class ArchivoBean implements Serializable{
             throw new Exception("Hay cuentas en la balanza de comprobacion que no han sido registradas para esta empresa. Actualizar antes el catalogo de cuentas.");
         }
         this.setNumRegistros(registrosBalanza.size());
+        
         return registrosBalanza;
     }
     
-    private void save(List<Balanza> toSave){
-        for (Balanza balanza : toSave) {
+    public void save(){
+        for (Balanza balanza : registrosBalanza) {
             BalanzaDao.insert(balanza);
         }
+        FacesContext.getCurrentInstance().addMessage("documento", new FacesMessage(FacesMessage.SEVERITY_INFO, "Carga exitosa!", "Tu archivo fue cargado con exito") );
+        this.setFileUploaded(true);
     }
 }

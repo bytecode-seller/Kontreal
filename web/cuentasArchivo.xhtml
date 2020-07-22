@@ -1,11 +1,64 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>TODO supply a title</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true">
+
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center" header="Carga de catalogo de cuentas">
+                    
+                    <h:form style="margin: 0 auto; width: 50%; padding: 100px">
+                        <p:growl for="documento" showDetail="true" sticky="true" />
+                        <p:outputLabel value="Elige archivo de catalogo de cuentas: " style="font-size: large; #{cuentasArchivoBean.fileUploaded ? 'display: none;' : ''}"/><br /><br />
+                        <p:fileUpload value="#{cuentasArchivoBean.file}" label="Elegir archivo" multiple="true" update="@form:confirmDialog:dialogContent"
+                                      uploadLabel="Subir achivo" fileUploadListener="#{cuentasArchivoBean.handleFileUpload}"  skinSimple="true" style="#{cuentasArchivoBean.fileUploaded ? 'display: none;' : ''}" />
+                        <p:outputLabel value="Fecha balanza: #{cuentasArchivoBean.fecha}" style="#{cuentasArchivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}" /><br/>
+                        <p:outputLabel value="Empresa: #{cuentasArchivoBean.empresa}" style="#{cuentasArchivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/><br/>
+                        <p:outputLabel value="Numero de registros contabilizados: #{cuentasArchivoBean.numRegistros}" style="#{cuentasArchivoBean.fileUploaded ?  '' : 'display: none;'}"/><br/>
+                        <p:dialog header="Confirmacion" widgetVar="confirmDialog" id="confirmDialog">
+                            <br/><br/>
+                            <p:outputPanel id="dialogContent">
+                                <p:outputLabel value="Desea subir la siguiente informacion?" /><br/>
+                                <p:outputLabel >
+                                    <b>Nombre de la empresa:</b> "#{cuentasArchivoBean.empresa}"
+                                </p:outputLabel><br/>
+                                <p:outputLabel value="Catalogo de cuentas al: #{cuentasArchivoBean.fecha}" /><br/>
+                                <p:outputLabel value="Total de registros: #{cuentasArchivoBean.numRegistros}" /><br/>
+                            </p:outputPanel>
+                            <br/> <br/>
+                            <p:commandButton value="Aceptar"  onclick="#{cuentasArchivoBean.save()}" update="@form" style="margin-left: auto;"/><p:commandButton type="button" value="Cancelar" onclick="PF('confirmDialog').hide();" style="margin-right: auto;" /><br/>
+                        </p:dialog>
+                    </h:form>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+            </p:layout>
+
+        </h:body>
+
+    </f:view>
 </html>

@@ -121,4 +121,13 @@ public class BalanzaDao {
         
         session.save(balanza);
     }
+    
+    public static Boolean isUpload(Date fecha, String empresa){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        return (long)session.createQuery("select count(*) from Balanza b where b.fecha = :date and b.cuenta.empresa.nombre = :emp")
+                .setDate("date", fecha)
+                .setString("emp", empresa)
+                .uniqueResult() > 0;
+    }
 }

@@ -22,4 +22,10 @@ public class EmpresaDao {
         return empresa;
     }
 
+    public static Empresa searchByName(String nombreEmpresa){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        return (Empresa) session.createQuery("from Empresa e where e.nombre = :name").setString("name", nombreEmpresa).uniqueResult();
+    }
 }

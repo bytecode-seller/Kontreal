@@ -27,15 +27,28 @@
                     <ui:include src="/menu.xhtml"/>
                 </p:layoutUnit>
 
-                <p:layoutUnit position="center" header="Bienvenido a Kontreal">\
+                <p:layoutUnit position="center" header="Carga de balanza de comprobación">
                     
                     <h:form style="margin: 0 auto; width: 50%; padding: 100px">
                         <p:growl for="documento" showDetail="true" sticky="true" />
                         <p:fileUpload value="#{archivoBean.file}" label="Elegir archivo" multiple="true"
-                                      uploadLabel="Subir achivo" fileUploadListener="#{archivoBean.handleFileUpload}" skinSimple="true" style="#{archivoBean.fileUploaded ? 'display: none;' : ''}" update="@form" />
+                                      uploadLabel="Subir achivo" fileUploadListener="#{archivoBean.handleFileUpload}" skinSimple="true" style="#{archivoBean.fileUploaded ? 'display: none;' : ''}" update="@form:confirmDialog:dialogContent" />
                         <p:outputLabel value="Fecha balanza: #{archivoBean.fechaBalanza}" style="#{archivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/><br/>
                         <p:outputLabel value="Empresa: #{archivoBean.empresa}" style="#{archivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/><br/>
                         <p:outputLabel value="Numero de registros contabilizados: #{archivoBean.numRegistros}" style="#{archivoBean.fileUploaded ?  '' : 'display: none;'}"/><br/>
+                        <p:dialog header="Confirmacion" widgetVar="confirmDialog" id="confirmDialog">
+                            <br/><br/>
+                            <p:outputPanel id="dialogContent">
+                                <p:outputLabel value="Desea subir la siguiente informacion?" /><br/>
+                                <p:outputLabel >
+                                    <b>Nombre de la empresa:</b> "#{archivoBean.empresa}"
+                                </p:outputLabel><br/>
+                                <p:outputLabel value="Catalogo de cuentas al: #{archivoBean.fechaBalanza}" /><br/>
+                                <p:outputLabel value="Total de registros: #{archivoBean.numRegistros}" /><br/>
+                            </p:outputPanel>
+                            <br/> <br/>
+                            <p:commandButton value="Aceptar"  onclick="#{archivoBean.save()}" update="@form" style="margin-left: auto;"/><p:commandButton type="button" value="Cancelar" onclick="PF('confirmDialog').hide();" style="margin-right: auto;" /><br/>
+                        </p:dialog>
                     </h:form>
                 </p:layoutUnit>
 
