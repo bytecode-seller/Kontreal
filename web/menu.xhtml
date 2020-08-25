@@ -9,8 +9,8 @@
                 <p:submenu label="#{sessionBean.selectedEmpresa ne null ? sessionBean.selectedEmpresa.nombre : 'Todas Las Empresas'}">
                     <p:menuitem value="Balanza Mensual" url="/reportes/balanzas.xhtml" disabled="#{view.viewId eq '/reportes/balanzas.xhtml'}" />
                     <p:menuitem url="/balanzaArchivo.xhtml" disabled="#{view.viewId eq '/balanzaArchivo.xhtml'}" value="Subir archivo balanza" />
-                    <p:menuitem value="Relación de Saldos" url="/reportes/saldos.xhtml" disabled="true" />
-                    <p:menuitem value="Estado de Resultados" url="/reportes/resultados.xhtml" disabled="true" />
+                    <p:menuitem value="Relación de Saldos" url="/reportes/saldos.xhtml" />
+                    <p:menuitem value="Estado de Resultados" url="/reportes/resultados.xhtml" />
                     <p:separator />
                     <p:menuitem value="Catálogo de Cuentas" url="/catalogos/cuentas.xhtml" disabled="#{view.viewId eq '/catalogos/cuentas.xhtml'}" />
                     <p:menuitem url="/cuentasArchivo.xhtml" disabled="#{view.viewId eq '/cuentasArchivo.xhtml'}" value="Actualizar catalogo de cuentas" />

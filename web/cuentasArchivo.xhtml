@@ -32,7 +32,7 @@
                         <p:growl for="documento" showDetail="true" sticky="true" />
                         <p:outputPanel id="uploadContent">
                             <p:outputLabel value="Elige archivo de catalogo de cuentas: " style="font-size: large; #{cuentasArchivoBean.fileUploaded ? 'display: none;' : ''}"/><br /><br />
-                            <p:fileUpload value="#{cuentasArchivoBean.file}" label="Elegir archivo" multiple="true" update="confirmDialog:dialogContent"
+                            <p:fileUpload value="#{cuentasArchivoBean.file}" label="Elegir archivo" multiple="true" update="@form:confirmDialog:dialogContent"
                                     uploadLabel="Subir achivo" fileUploadListener="#{cuentasArchivoBean.handleFileUpload}"  skinSimple="true" style="#{cuentasArchivoBean.fileUploaded ? 'display: none;' : ''}" />
                             <p:outputLabel value="Fecha balanza: #{cuentasArchivoBean.fecha}" style="#{cuentasArchivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}" /><br/>
                             <p:outputLabel value="Empresa: #{cuentasArchivoBean.empresa}" style="#{cuentasArchivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/><br/>
