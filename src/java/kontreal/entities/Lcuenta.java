@@ -52,10 +52,6 @@ public class Lcuenta  implements java.io.Serializable {
     public void setUpdated(Date updated) {
         this.updated = updated;
     }
-
-
-
-
 }
 
 

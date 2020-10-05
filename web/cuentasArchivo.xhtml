@@ -27,36 +27,57 @@
                 </p:layoutUnit>
 
                 <p:layoutUnit position="center" header="Carga de catalogo de cuentas">
-                    
-                    <h:form id="formCuentas" style="margin: 0 auto; width: 50%; padding: 100px">
-                        <p:growl for="documento" showDetail="true" sticky="true" />
-                        <p:outputPanel id="uploadContent">
-                            <p:outputLabel value="Elige archivo de catalogo de cuentas: " style="font-size: large; #{cuentasArchivoBean.fileUploaded ? 'display: none;' : ''}"/><br /><br />
-                            <p:fileUpload value="#{cuentasArchivoBean.file}" label="Elegir archivo" multiple="true" update="@form:confirmDialog:dialogContent"
-                                    uploadLabel="Subir achivo" fileUploadListener="#{cuentasArchivoBean.handleFileUpload}"  skinSimple="true" style="#{cuentasArchivoBean.fileUploaded ? 'display: none;' : ''}" />
-                            <p:outputLabel value="Fecha balanza: #{cuentasArchivoBean.fecha}" style="#{cuentasArchivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}" /><br/>
-                            <p:outputLabel value="Empresa: #{cuentasArchivoBean.empresa}" style="#{cuentasArchivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/><br/>
-                            <p:outputLabel value="Numero de registros contabilizados: #{cuentasArchivoBean.numRegistros}" style="#{cuentasArchivoBean.fileUploaded ?  '' : 'display: none;'}"/><br/>
-                        </p:outputPanel>
+                    <h:form style="margin: 0 auto; width: 50%; padding: 100px">
+                        <p:growl for="documento" showDetail="true" sticky="true" id="gro" severity="info,warn,error"/>
+                        <p:fileUpload id="archivo" 
+                                      label="Elegir archivo" 
+                                      multiple="true"
+                                      widgetVar="importFile"
+                                      uploadLabel="Subir achivo"
+                                      skinSimple="true"
+                                      fileUploadListener="#{cuentasArchivoBean.handle}"
+                                      style="#{cuentasArchivoBean.fileUploaded ? 'display: none;' : ''}"
+                                      allowTypes="/(\.|\/)(html)$/" invalidFileMessage="El tipo de archivo es invalido, cargue documentos con extension .html"
+                                      onstart="rc([{name:'size', value:PF('importFile').files.length}])"
+                                      update="dialogContent,gro"
+                                      process="@(:not(button))">
+                        </p:fileUpload>
+                        <p:remoteCommand name="rc" update="gro" actionListener="#{cuentasArchivoBean.setFileCounter}" />
+                        <c:forEach items="#{cuentasArchivoBean.archivosCuentas}" var="cuenta" varStatus="status" >
+                            <p:outputLabel style="#{cuentasArchivoBean.fileUploaded ?  '' : 'display: none;'}" >
+                                <b>Nombre de la empresa:</b> #{cuenta.nombreEmpresa}
+                            </p:outputLabel><br/>
+                            <p:outputLabel style="#{cuentasArchivoBean.fileUploaded ?  '' : 'display: none;'}">
+                                <b>Catalogo cuentas al:</b> #{cuenta.fechaCatalogo}
+                            </p:outputLabel><br/>
+                            <p:outputLabel style="#{archivoBean.fileUploaded ?  '' : 'display: none;'}">
+                                <b>Total de registros:</b> #{cuenta.numeroRegistros}
+                            </p:outputLabel><br/>
+                        </c:forEach>
+                        <p:commandButton value="Subir mas archivos" action="#{cuentasArchivoBean.setFileUploaded(false)}" update="@form" style="#{cuentasArchivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/>
                         
-                        <p:dialog header="Confirmacion" widgetVar="confirmDialog" id="confirmDialog">
+                        <p:dialog header="Confirmacion" widgetVar="confirmDialog" id="confirmDialog" >
+                            <p:ajax event="close" listener="#{cuentasArchivoBean.cancel()}"/>
                             <br/><br/>
-                            <p:outputPanel id="dialogContent">
-                                <p:outputLabel value="Desea subir la siguiente informacion?" /><br/>
-                                <p:outputLabel >
-                                    <b>Nombre de la empresa:</b> "#{cuentasArchivoBean.empresa}"
-                                </p:outputLabel><br/>
-                                <p:outputLabel>
-                                    <b>Catalogo de cuentas al:</b> #{cuentasArchivoBean.fecha}
-                                </p:outputLabel><br/>
-                                <p:outputLabel>
-                                    <b>Total de registros:</b> #{cuentasArchivoBean.numRegistros}
-                                </p:outputLabel><br/>
+                            <p:outputPanel id="dialogContent" >
+                                <p:outputLabel style="margin: auto auto; width: 100%;">
+                                    <b>Se cargaron los siguientes archivos</b>
+                                </p:outputLabel>
+                                
+                                <c:forEach  items="#{cuentasArchivoBean.archivosCuentas}" var="cuentasD" varStatus="status" id="repeatDialog" >
+                                    <p:outputPanel id="panelCuenta">
+                                        <br/><p:outputLabel style="#{cuentasD.toUpdate ?  'color: #e99d56' : 'display: none;'}" value="Este catalogo ya ha sido carga anteriormente" />
+                                        <br/><p:outputLabel> <b>Nombre de la empresa:</b> #{cuentasD.nombreEmpresa}</p:outputLabel>
+                                        <br/><p:outputLabel> <b>Catalogo de cuentas al:</b> #{cuentasD.fechaCatalogo}</p:outputLabel>
+                                        <br/><p:outputLabel> <b>Total de registros:</b> #{cuentasD.numeroRegistros}</p:outputLabel>
+                                    </p:outputPanel>
+                                    <br/><p:commandButton icon="fa fa-save" value="Guardar" action="#{cuentasArchivoBean.save(status.index)}" update="dialogContent,gro"/>
+                                    <p:commandButton value="Cancelar" action="#{cuentasArchivoBean.disableUpload(status.index)}" update="dialogContent"/>
+                                    <p:separator />
+                                </c:forEach>
                             </p:outputPanel>
-                            <br/> <br/>
-                            <p:commandButton value="Aceptar"  action="#{cuentasArchivoBean.save()}" ajax="false" update="@form:uploadContent" style="margin-left: auto;"/>
-                            <p:commandButton type="button" value="Cancelar" onclick="PF('confirmDialog').hide();" style="margin-right: auto;" /><br/>
                         </p:dialog>
+                        
                     </h:form>
                 </p:layoutUnit>
 

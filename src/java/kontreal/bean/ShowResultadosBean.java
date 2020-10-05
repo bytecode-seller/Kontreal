@@ -73,6 +73,7 @@ public class ShowResultadosBean implements Serializable {
     }
 
     private void updateData1() {
+        System.out.println("Selected empresa: " + sessionBean.getSelectedEmpresa());
         resultadosData = ResultadosDao.getResultados(sessionBean.getSelectedEmpresa(), ejercicio);
         resultadosTotalData = ResultadosDao.getTotalesResultados(sessionBean.getSelectedEmpresa(), ejercicio);
         utilidadesData = ResultadosDao.getUtilidadPerdida(sessionBean.getSelectedEmpresa(), ejercicio);

@@ -10,10 +10,9 @@ import javax.ejb.Stateless;
 import kontreal.dao.BalanzaDao;
 import kontreal.dao.CuentaDao;
 import kontreal.dao.EmpresaDao;
-import kontreal.dto.ArchivoBalanzaDto;
+import kontreal.dto.ArchivoBalanzaDTO;
 import kontreal.entities.Balanza;
 import kontreal.entities.Cuenta;
-import kontreal.entities.Empresa;
 import kontreal.exceptions.CustomException;
 import kontreal.util.DateUtils;
 import org.jsoup.Jsoup;
@@ -38,13 +37,13 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
     final static int SALDO_FIN_ACREEDOR = 7;
     
     @Override
-    public ArchivoBalanzaDto filterDataFromHtml(String html){        
+    public ArchivoBalanzaDTO filterDataFromHtml(String html){        
         
         Document doc = Jsoup.parse(html);
         Elements elements = doc.getElementsByTag("tr");
         
         ArrayList<String> erroresArchivo = new ArrayList<>();
-        ArchivoBalanzaDto datosArchivo = new ArchivoBalanzaDto();
+        ArchivoBalanzaDTO datosArchivo = new ArchivoBalanzaDTO();
         
         datosArchivo.setNombreArchivo(doc.getElementById("nombreArchivo").text());
         
@@ -64,10 +63,10 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
         //El segundo elemento <tr> contiene la fecha en la que se hizo la balanza
         String fechaBalanza = elements.get(1).child(0).text();
         
-        Date fechaParseada = null;
+        Date fechaBalanzaParseada = null;
         
         try {
-            fechaParseada = parseFecha(fechaBalanza);
+            fechaBalanzaParseada = parseFechaBalanza(fechaBalanza);
         } catch (CustomException ex) {
             erroresArchivo.add(ex.getValue() + " " + ex.getMensaje());
             datosArchivo.setErrores(erroresArchivo);
@@ -75,10 +74,10 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
             return datosArchivo;
         }
         
-        Boolean fechaValida = DateUtils.validarUltimoDiaMes(fechaParseada.getYear(), fechaParseada.getMonth(), fechaParseada.getDate());
+        Boolean fechaBalanzaValida = DateUtils.validarUltimoDiaMes(fechaBalanzaParseada.getYear(), fechaBalanzaParseada.getMonth(), fechaBalanzaParseada.getDate());
         
         //Si la fecha de la balanza es invalida se lanza una Excepcion
-        if (!fechaValida){
+        if (!fechaBalanzaValida){
             erroresArchivo.add(Error.INVALID_DATE_ERROR);
             datosArchivo.setValid(false);
             datosArchivo.setErrores(erroresArchivo);
@@ -87,10 +86,27 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
             
         
         //Si hay registros de balanza con la misma fecha se lanza excepcion
-        if(balanzaIsLoaded(fechaParseada, nombreEmpresa)) 
+        if(balanzaIsLoaded(fechaBalanzaParseada, nombreEmpresa)) 
                 datosArchivo.setToUpdate(true);
         
-        datosArchivo.setFechaBalanza(fechaParseada);
+        datosArchivo.setFechaBalanza(fechaBalanzaParseada);
+        
+        //El segundo elemento <tr> contiene la fecha en la que se hizo la balanza
+        String fechaDescarga = elements.get(1).child(1).text();
+        
+        Date fechaDescargaParseada = null;
+        
+        try {
+            fechaDescargaParseada = parseFechaDescarga(fechaDescarga);
+        } catch (CustomException ex) {
+            erroresArchivo.add(ex.getValue() + " " + ex.getMensaje());
+            datosArchivo.setErrores(erroresArchivo);
+            datosArchivo.setValid(false);
+            return datosArchivo;
+        }
+        
+        datosArchivo.setFechaDescarga(fechaDescargaParseada);
+        System.out.println("Antes del ciclo");
         
         Balanza b = null;
         Cuenta c  = null;
@@ -118,7 +134,7 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
                 double saldoFinA = saldoFinAcreedor.isEmpty() ? 0d : Double.parseDouble(saldoFinAcreedor.replace(",", ""));
                 
                 b.setSaldofin(saldoFinD + (-1 * saldoFinA));
-                b.setFecha(fechaParseada);
+                b.setFecha(fechaBalanzaParseada);
                 b.setUpdated(new Date());
                 registrosBalanza.add(b);
             }
@@ -141,15 +157,16 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
         
         datosArchivo.setRegistrosBalanza(registrosBalanza);
         datosArchivo.setNumeroRegistros(registrosBalanza.size());
+        datosArchivo.setFechaBalanza(fechaBalanzaParseada);
+        datosArchivo.setFechaDescarga(fechaDescargaParseada);
+        System.out.println("Fin lectura archivo");
         
         return datosArchivo;
     }
     
     public boolean empresaExists(String nombreEmpresa){
-        Empresa e = EmpresaDao.searchByName(nombreEmpresa);
-        System.out.println("nombre de la empresa: " + nombreEmpresa);
         
-        return e!=null;
+        return EmpresaDao.exists(nombreEmpresa);
     }
     
     public boolean balanzaIsLoaded(Date date, String empresa){
@@ -162,7 +179,7 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
         return uploaded;
     }
     
-    public Date parseFecha(String fecha) throws CustomException{
+    public Date parseFechaBalanza(String fecha) throws CustomException{
          //Filtramos la cadena del tercer tag <td> para obtener la fecha
         String fechaBalanza = fecha.substring(27);
         
@@ -183,6 +200,30 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
         }
         System.out.println(fechaBalanza+"\t"+date);  
         System.out.println("fecha balanza: " + fechaBalanza);
+        
+        return date;
+    }
+    
+    public Date parseFechaDescarga(String fecha) throws CustomException{
+         //Filtramos la cadena del tercer tag <td> para obtener la fecha
+        String fechaDescarga = fecha.substring(7);
+        
+        //Cambiamos las iniciales del mes por su representacion numerica
+        String inicialesMes = fechaDescarga.substring(3, 6);
+        
+        fechaDescarga = fechaDescarga.replace(inicialesMes.subSequence(0, inicialesMes.length()), DateUtils.inicialesMesPorNumero(inicialesMes).subSequence(0, 2));
+        
+        //Se hace parse de tipo String a tipo Date
+        Date date = null;  
+        try {
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(fechaDescarga);
+        } catch (ParseException ex) {
+            System.out.println("Parsing failed");
+            throw new CustomException(kontreal.errors.Error.PARSE_DATE_ERROR)
+                    .entityName(Date.class.getSimpleName())
+                    .value(fechaDescarga);
+        }
+        System.out.println("fecha descarga balanza: " + fechaDescarga + " " + date );
         
         return date;
     }

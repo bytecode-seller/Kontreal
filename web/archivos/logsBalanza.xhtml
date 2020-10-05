@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <f:view contentType="text/html" locale="es_MX">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+        </h:head>
+
+        <h:body>
+
+            <p:layout fullPage="true">
+
+                <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu.xhtml"/>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center" header="Logs de carga de archivos de Balanza de comprobacion y Catalogo de cuentas">
+                    
+                    <h:form style="margin: 0 auto; width: 100%;" >
+                        <p:dataTable id="logTable"
+                                     var="log"
+                                     value="#{logArchivoBalanzaBean.logs}" 
+                                     widgetVar="widgetTable" 
+                                     emptyMessage="No hay registros con esta condicion"
+                                     scrollable="true"
+                                     scrollHeight="300"
+                                     style="width: 80%">
+                               
+<!--                            <f:facet name="header">
+                                <h:outputText value="Logs archivos"/>
+                            </f:facet>-->
+                            <p:separator/><br/>
+                            <f:facet name="header">
+                                <h:outputText value="Filtrar por fecha de carga" style="margin-right: 15%"/>
+                                <h:outputText value="Filtrar por fecha de consulta"/>
+-->                                <p:toolbar id="toolbar">
+                                    <p:toolbarGroup align="left">
+                                        <p:outputLabel value="Desde:&nbsp;"/>
+                                        <p:calendar value="#{logArchivoBalanzaBean.desdeCarga}" locale="es" showOn="button" placeholder="Desde" readonlyInput="true" 
+                                                    navigator="true" styleClass="calendar_inputbox-notime" pattern="yyyy-MMMM-dd" yearRange="c-2:c+0" widgetVar="calWidDesdeCarga">
+                                            <p:ajax event="dateSelect" 
+                                                    listener="#{logArchivoBalanzaBean.chooseFechaCarga()}"
+                                                    update="@form"
+                                                    process="@(:not(button))"/>
+                                        </p:calendar>
+                                        <p:spacer width="5"/>
+                                        <p:separator/>
+                                        <p:outputLabel value="Hasta:&nbsp;"/>
+                                        <p:calendar value="#{logArchivoBalanzaBean.hastaCarga}" 
+                                                    locale="es" 
+                                                    showOn="button" 
+                                                    placeholder="Hasta" 
+                                                    readonlyInput="true" 
+                                                    navigator="true"
+                                                    styleClass="calendar_inputbox-notime"
+                                                    pattern="yyyy-MMMM-dd" 
+                                                    yearRange="c-2:c+0"
+                                                    widgetVar="calWidHastaCarga">
+                                            <p:ajax event="dateSelect" 
+                                                    listener="#{logArchivoBalanzaBean.chooseFechaCarga()}" 
+                                                    update="@form"
+                                                    process="@(:not(button))"/>
+                                        </p:calendar>
+                                    </p:toolbarGroup>
+                                    <p:toolbarGroup align="left">
+                                        <p:outputLabel value="Desde:&nbsp;"/>
+                                        <p:calendar value="#{logArchivoBalanzaBean.desdeConsulta}" locale="es" showOn="button" placeholder="Desde" readonlyInput="true" 
+                                                    navigator="true" styleClass="calendar_inputbox-notime" pattern="yyyy-MMMM-dd" yearRange="c-2:c+0" widgetVar="calWidDesdeConsulta">
+                                            <p:ajax event="dateSelect" 
+                                                    listener="#{logArchivoBalanzaBean.chooseFechaConsulta()}"
+                                                    update="@form"
+                                                    process="@(:not(button))"/>
+                                        </p:calendar>
+                                        <p:spacer width="5"/>
+                                        <p:separator/>
+                                        <p:outputLabel value="Hasta:&nbsp;"/>
+                                        <p:calendar value="#{logArchivoBalanzaBean.hastaConsulta}" 
+                                                    locale="es" 
+                                                    showOn="button" 
+                                                    placeholder="Hasta" 
+                                                    readonlyInput="true" 
+                                                    navigator="true"
+                                                    styleClass="calendar_inputbox-notime"
+                                                    pattern="yyyy-MMMM-dd" 
+                                                    yearRange="c-2:c+0"
+                                                    widgetVar="calWidHastaConsulta">
+                                            <p:ajax event="dateSelect" 
+                                                    listener="#{logArchivoBalanzaBean.chooseFechaConsulta()}" 
+                                                    update="@form"
+                                                    process="@(:not(button))"/>
+                                        </p:calendar>
+                                        <p:commandButton value="Reset" action="#{logArchivoBalanzaBean.clearDates()}" onclick="calWidDesdeCarga.setDate(null);calWidHastaCarga.setDate(null);calWidDesdeConsulta.setDate(null);calWidHastaConsulta.setDate(null);"/>
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+                            </f:facet> 
+                            
+                            <p:column filterBy="#{log.nombre}" width="25%">
+                                <f:facet name="header">
+                                    <h:outputText value="nombre" />
+                                </f:facet>
+                                <h:outputText value="#{log.nombre}" />
+                            </p:column>
+                            <p:column filterStyle="display:none; visibility:hidden;">
+                                <f:facet name="header">
+                                    <h:outputText value="mensaje" />
+                                </f:facet>
+                                <h:outputText value="#{log.mensaje}" />
+                            </p:column >
+                            <p:column filterStyle="display:none; visibility:hidden;">
+                                <f:facet name="header">
+                                    <h:outputText value="Fecha de carga" />
+                                </f:facet>
+                                <h:outputText value="#{log.fechaCarga}" />
+                            </p:column>
+                            <p:column filterStyle="display:none; visibility:hidden;">
+                                <f:facet name="header">
+                                    <h:outputText value="Fecha de consulta al" />
+                                </f:facet>
+                                <h:outputText value="#{log.fechaArchivo}" />
+                            </p:column>
+                            <p:column filterStyle="display:none; visibility:hidden;">
+                                <f:facet name="header">
+                                    <h:outputText value="Fecha de descarga Contpaq" />
+                                </f:facet>
+                                <h:outputText value="#{log.fechaDescarga}" />
+                            </p:column>
+                            <p:column filterStyle="display:none; visibility:hidden;" width="25%"> 
+                                <f:facet name="header">
+                                    <h:outputText value="Cargados/Actualizados" />
+                                </f:facet>
+                                <h:outputText value="#{log.numRegistros}/#{log.actualizado}" />
+                            </p:column>
+                            <p:column filterStyle="display:none; visibility:hidden;">
+                                <f:facet name="header">
+                                    <h:outputText value="Guardado" />
+                                </f:facet>
+                                <h:outputText value="#{log.guardado eq true ? 'Si': 'No' } " />
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="30" style="text-align: center;">
+                    <p:outputLabel value="(&lt;/&gt;) Bytecode, Soluciones Informáticas" style="font-size: small;"/>
+                </p:layoutUnit>
+
+            </p:layout>
+
+        </h:body>
+
+    </f:view>
+</html>

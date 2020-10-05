@@ -1,7 +1,7 @@
 package kontreal.services;
 
 import javax.ejb.Remote;
-import kontreal.dto.ArchivoBalanzaDto;
+import kontreal.dto.ArchivoBalanzaDTO;
 
 /**
  *
@@ -9,5 +9,5 @@ import kontreal.dto.ArchivoBalanzaDto;
  */
 @Remote
 public interface ArchivoBalanzaService {
-    public ArchivoBalanzaDto filterDataFromHtml(String html);
+    public ArchivoBalanzaDTO filterDataFromHtml(String html);
 }

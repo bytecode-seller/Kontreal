@@ -97,10 +97,6 @@ public class Gasto  implements java.io.Serializable {
     public void setUpdated(Date updated) {
         this.updated = updated;
     }
-
-
-
-
 }
 
 
