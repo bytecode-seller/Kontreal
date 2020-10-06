@@ -26,7 +26,6 @@ import org.primefaces.model.UploadedFile;
  *
  * @author Martin Tepostillo
  */
-// Comment test
 @Named
 @ViewScoped
 public class ArchivoBean implements Serializable{
