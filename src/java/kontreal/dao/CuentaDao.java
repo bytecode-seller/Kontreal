@@ -109,4 +109,17 @@ public class CuentaDao {
                 .setString("emp", empresa)
                 .uniqueResult();
     }
+    
+    public static void insertOrUpdate(Cuenta cuenta){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        session.saveOrUpdate(cuenta);
+    }
+    
+    public static List<Cuenta> findAll(){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        return session.createQuery("from Cuenta c").list();
+    }
 }

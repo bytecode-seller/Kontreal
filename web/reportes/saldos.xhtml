@@ -50,6 +50,12 @@
                                 <p:outputPanel>
                                     <p:toolbar id="toolbar">
                                         <p:toolbarGroup align="left">
+                                            <h:outputText value="Empresa:" />
+                                            <p:selectOneMenu value="#{sessionBean.empresa}" style="width: 200px;" >
+                                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                                <f:selectItems value="#{showSaldosBean.empresas}" />
+                                                <p:ajax event="change" listener="#{sessionBean.empresaListener()}" update="saldos"/>
+                                            </p:selectOneMenu>
                                             <h:outputText value="Cuenta Contable:" />
                                             <p:selectOneMenu value="#{showSaldosBean.cuenta}" style="width: 200px;" converter="converterCuentaSaldos">
                                                 <f:selectItems value="#{showSaldosBean.cuentasConverter}" />

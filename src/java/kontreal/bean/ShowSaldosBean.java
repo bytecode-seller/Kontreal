@@ -16,8 +16,10 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import kontreal.dao.BalanzaDao;
 import kontreal.dao.CuentaDao;
+import kontreal.dao.EmpresaDao;
 import kontreal.entities.Balanza;
 import kontreal.entities.Cuenta;
+import kontreal.entities.Empresa;
 import org.joda.time.DateTime;
 
 /**
@@ -63,8 +65,10 @@ public class ShowSaldosBean implements Serializable {
     }
 
     public void listenerParams() {
-        System.out.println("-------------- Cuenta: " + cuenta.getCuenta());
-        System.out.println("-------------- Ejercicio: " + ejercicio);
+        if(sessionBean.getSelectedEmpresa() != null)
+            System.out.println(sessionBean.getSelectedEmpresa());
+        //System.out.println("-------------- Cuenta: " + cuenta.getCuenta());
+        //System.out.println("-------------- Ejercicio: " + ejercicio);
         updateData();
     }
 
@@ -72,6 +76,12 @@ public class ShowSaldosBean implements Serializable {
         cuentasConverter = new TreeMap<>();
         cuentasConverter.put("- Selecciona -", null);
 
+        if(sessionBean.getSelectedEmpresa() == null){
+            for (Cuenta cue : CuentaDao.findAll()) {
+                cuentasConverter.put(cue.getCuenta() + " - " + cue.getNombre(), cue);
+            }
+        }
+        else
         for (Cuenta cue : CuentaDao.searchAll(sessionBean.getSelectedEmpresa())) {
             cuentasConverter.put(cue.getCuenta() + " - " + cue.getNombre(), cue);
         }
@@ -118,4 +128,7 @@ public class ShowSaldosBean implements Serializable {
         this.cuenta = cuenta;
     }
 
+    public List<kontreal.entities.Empresa> getEmpresas(){
+        return EmpresaDao.searchAll();
+    }
 }

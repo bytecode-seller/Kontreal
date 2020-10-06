@@ -27,15 +27,53 @@
                     <ui:include src="/menu.xhtml"/>
                 </p:layoutUnit>
 
-                <p:layoutUnit position="center" header="Bienvenido a Kontreal">\
+                <p:layoutUnit position="center" header="Carga de balanza de comprobación">
                     
                     <h:form style="margin: 0 auto; width: 50%; padding: 100px">
-                        <p:growl for="documento" showDetail="true" sticky="true" />
-                        <p:fileUpload value="#{archivoBean.file}" label="Elegir archivo" multiple="true"
-                                      uploadLabel="Subir achivo" fileUploadListener="#{archivoBean.handleFileUpload}" skinSimple="true" style="#{archivoBean.fileUploaded ? 'display: none;' : ''}" update="@form" />
-                        <p:outputLabel value="Fecha balanza: #{archivoBean.fechaBalanza}" style="#{archivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/><br/>
-                        <p:outputLabel value="Empresa: #{archivoBean.empresa}" style="#{archivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/><br/>
-                        <p:outputLabel value="Numero de registros contabilizados: #{archivoBean.numRegistros}" style="#{archivoBean.fileUploaded ?  '' : 'display: none;'}"/><br/>
+                        <p:growl for="documento" showDetail="true" sticky="true" id="gro" severity="info,warn,error"/>
+                        <p:fileUpload id="archivo" value="#{archivoBean.file}" label="Elegir archivo" multiple="true" widgetVar="importFile"
+                                      uploadLabel="Subir achivo" fileUploadListener="#{archivoBean.handleFileUpload}" skinSimple="true" 
+                                      style="#{archivoBean.fileUploaded ? 'display: none;' : ''}" 
+                                      allowTypes="/(\.|\/)(html)$/" invalidFileMessage="El tipo de archivo es invalido, cargue documentos con extension .html" 
+                                      onstart="rc([{name:'size', value:PF('importFile').files.length}])" 
+                                      update="dialogContent,gro" process="@(:not(button))">
+                        </p:fileUpload>
+                        <p:remoteCommand name="rc" update="gro" actionListener="#{archivoBean.setFileCounter}" />
+                        <c:forEach items="#{archivoBean.archivosBalanza}" var="balanza" varStatus="status" >
+                            <p:outputLabel style="#{archivoBean.fileUploaded ?  '' : 'display: none;'}" >
+                                <b>Nombre de la empresa:</b> #{balanza.nombreEmpresa}
+                            </p:outputLabel><br/>
+                            <p:outputLabel style="#{archivoBean.fileUploaded ?  '' : 'display: none;'}">
+                                <b>Balanza de comprobacion al:</b> #{balanza.fechaBalanza}
+                            </p:outputLabel><br/>
+                            <p:outputLabel style="#{archivoBean.fileUploaded ?  '' : 'display: none;'}">
+                                <b>Total de registros:</b> #{balanza.numeroRegistros}
+                            </p:outputLabel><br/>
+                        </c:forEach>
+                        <p:commandButton value="Subir mas archivos" action="#{archivoBean.setFileUploaded(false)}" update="@form" style="#{archivoBean.fileUploaded ?  'margin:auto;' : 'display: none;'}"/>
+                        
+                        <p:dialog header="Confirmacion" widgetVar="confirmDialog" id="confirmDialog" >
+                            <p:ajax event="close" listener="#{archivoBean.cancel()}"/>
+                            <br/><br/>
+                            <p:outputPanel id="dialogContent" >
+                                <p:outputLabel style="margin: auto auto; width: 100%;">
+                                    <b>Se cargaron los siguientes archivos</b>
+                                </p:outputLabel>
+                                
+                                <c:forEach  items="#{archivoBean.archivosBalanza}" var="balanzaD" varStatus="status" id="repeatDialog" >
+                                    <p:outputPanel id="panelBalanza">
+                                        <br/><p:outputLabel style="#{balanzaD.toUpdate ?  'color: #e99d56' : 'display: none;'}" value="Esta balanza mensual ya ha sido carga anteriormente" />
+                                        <br/><p:outputLabel> <b>Nombre de la empresa:</b> #{balanzaD.nombreEmpresa}</p:outputLabel>
+                                        <br/><p:outputLabel> <b>Balanza de comprobacion al:</b> #{balanzaD.fechaBalanza}</p:outputLabel>
+                                        <br/><p:outputLabel> <b>Total de registros:</b> #{balanzaD.numeroRegistros}</p:outputLabel>
+                                    </p:outputPanel>
+                                    <br/><p:commandButton icon="fa fa-save" value="Guardar" action="#{archivoBean.save(status.index)}" update="dialogContent,gro"/>
+                                    <p:commandButton value="Cancelar" action="#{archivoBean.disableUpload(status.index)}" update="dialogContent"/>
+                                    <p:separator />
+                                </c:forEach>
+                            </p:outputPanel>
+                        </p:dialog>
+                        
                     </h:form>
                 </p:layoutUnit>
 

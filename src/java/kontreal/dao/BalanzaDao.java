@@ -68,7 +68,7 @@ public class BalanzaDao {
         } else {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where c = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.cuenta")
-                    .setEntity("emp", empresa).setEntity("cue", cuenta).setInteger("eje", ejercicio).list();
+                    .setEntity("cue", cuenta).setInteger("eje", ejercicio).list();
         }
     }
 
@@ -120,5 +120,30 @@ public class BalanzaDao {
         Session session = HibernateUtil.getSession();
         
         session.save(balanza);
+    }
+    
+    public static Boolean isUpload(Date fecha, String empresa){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        return (long)session.createQuery("select count(*) from Balanza b where b.fecha = :date and b.cuenta.empresa.nombre = :emp")
+                .setDate("date", fecha)
+                .setString("emp", empresa)
+                .uniqueResult() > 0;
+    }
+    
+    public static void insertOrUpdate(Balanza balanza){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        session.saveOrUpdate(balanza);
+    }
+    
+    public static void deleteByDate(Date date){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        Balanza b = new Balanza();
+        b.setFecha(date);
+        session.delete(b);
     }
 }
