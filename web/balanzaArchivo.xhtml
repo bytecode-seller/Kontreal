@@ -30,7 +30,7 @@
                 <p:layoutUnit position="center" header="Carga de balanza de comprobación">
                     
                     <h:form style="margin: 0 auto; width: 50%; padding: 100px">
-                        <p:growl for="documento" showDetail="true" sticky="true" id="gro" severity="info,warn,error"/>
+                        <p:growl id="gro" for="documento" showDetail="true" sticky="true" severity="info,warn,error"/>
                         <p:fileUpload id="archivo" value="#{archivoBean.file}" label="Elegir archivo" multiple="true" widgetVar="importFile"
                                       uploadLabel="Subir achivo" fileUploadListener="#{archivoBean.handleFileUpload}" skinSimple="true" 
                                       style="#{archivoBean.fileUploaded ? 'display: none;' : ''}" 
@@ -38,7 +38,7 @@
                                       onstart="rc([{name:'size', value:PF('importFile').files.length}])" 
                                       update="dialogContent,gro" process="@(:not(button))">
                         </p:fileUpload>
-                        <p:remoteCommand name="rc" update="gro" actionListener="#{archivoBean.setFileCounter}" />
+                        <p:remoteCommand name="rc" actionListener="#{archivoBean.setFileCounter}" />
                         <c:forEach items="#{archivoBean.archivosBalanza}" var="balanza" varStatus="status" >
                             <p:outputLabel style="#{archivoBean.fileUploaded ?  '' : 'display: none;'}" >
                                 <b>Nombre de la empresa:</b> #{balanza.nombreEmpresa}

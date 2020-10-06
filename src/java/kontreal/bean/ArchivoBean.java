@@ -1,14 +1,10 @@
 package kontreal.bean;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -16,9 +12,12 @@ import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import kontreal.dao.BalanzaDao;
-import kontreal.dto.ArchivoBalanzaDto;
+import kontreal.dao.LogArchivoBalanzaDao;
+import kontreal.dto.ArchivoBalanzaDTO;
 import kontreal.entities.Balanza;
+import kontreal.entities.LogArchivoBalanza;
 import kontreal.services.ArchivoBalanzaService;
+import kontreal.util.FileUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -51,8 +50,8 @@ public class ArchivoBean implements Serializable{
     private String empresa;
     private Integer numRegistros;
     private boolean fileUploaded;
-    private ArrayList<ArchivoBalanzaDto> archivosBalanza = new ArrayList<>();
-    private ArrayList<FacesMessage> errores = new ArrayList<>();
+    private CopyOnWriteArrayList<ArchivoBalanzaDTO> archivosBalanza = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<FacesMessage> errores = new CopyOnWriteArrayList<>();
     private AtomicInteger fileCounter = new AtomicInteger();
 
     public boolean isFileUploaded() {
@@ -90,11 +89,11 @@ public class ArchivoBean implements Serializable{
         this.numRegistros = numRegistros;
     }
 
-    public ArrayList<ArchivoBalanzaDto> getArchivosBalanza() {
+    public CopyOnWriteArrayList<ArchivoBalanzaDTO> getArchivosBalanza() {
         return archivosBalanza;
     }
 
-    public void setArchivosBalanza(ArrayList<ArchivoBalanzaDto> archivosBalanza) {
+    public void setArchivosBalanza(CopyOnWriteArrayList<ArchivoBalanzaDTO> archivosBalanza) {
         this.archivosBalanza = archivosBalanza;
     }
     
@@ -116,7 +115,7 @@ public class ArchivoBean implements Serializable{
         String htmlString = "<h1 id=\"nombreArchivo\">" + name + "</h1>";
         //Se convierte el archivo de texto a un solo String para procesarlo con Jsoup
         try {
-            htmlString += convertFileToString();
+            htmlString += FileUtils.convertFileToString(file);
         } catch (IOException ex) {
             System.out.println("Error al convertir archivo a texto");
         }
@@ -124,34 +123,47 @@ public class ArchivoBean implements Serializable{
         archivosBalanza.add(archivoBalanzaService.filterDataFromHtml(htmlString));
         
         if(fileCounter.decrementAndGet() == 0) {
-            for (int i = 0; i< archivosBalanza.size();i++) {
+            int totalArchivos = archivosBalanza.size() -1 ;
+            for (int i = totalArchivos; i >=0 ;i--) {
                 
                 if(!archivosBalanza.get(i).isValid()){
+                    LogArchivoBalanza log = new LogArchivoBalanza();
                     for (String error : archivosBalanza.get(i).getErrores()) {
-                        FacesContext.getCurrentInstance().addMessage("documento", new FacesMessage(FacesMessage.SEVERITY_ERROR,"Error al leer documento",archivosBalanza.get(i).getNombreArchivo() + "\n" + error));
-                        
+                        FacesContext.getCurrentInstance()
+                                .addMessage("documento", new FacesMessage(FacesMessage.SEVERITY_ERROR,"Error al leer documento",archivosBalanza.get(i).getNombreArchivo() + "\n" + error));
                     }
+                    
+                    if(archivosBalanza.get(i).getErrores().get(0).equals(kontreal.errors.Error.EMPRESA_NOT_FOUND_ERROR)){
+                        log.setMensaje(kontreal.errors.Error.EMPRESA_NOT_FOUND_ERROR);
+                    }
+                    if(archivosBalanza.get(i).getErrores().get(0).startsWith(kontreal.errors.Error.CUENTA_NOT_FOUND_ERROR)){
+                        log.setMensaje("Se cancela por no existir cuenta(s) contables.");
+                    }else{
+                        log.setMensaje("Error al leer el documento");
+                    }
+                    
+                    log.setFechaCarga(new Date());
+                    log.setNombre(archivosBalanza.get(i).getNombreArchivo());
+                    log.setFechaArchivo(null);
+                    log.setFechaDescarga(null);
+                    log.setNumRegistros(0);
+                    LogArchivoBalanzaDao.insert(log);
+                    System.out.println("Archivo NO valido" + archivosBalanza.get(i).getNombreArchivo() +" " + archivosBalanza.get(i).isValid());
                     archivosBalanza.remove(i);
                 }
-                
             }
             if(!archivosIsEmpty()){
                 reqContext.execute("PF('confirmDialog').show();");
                 FacesMessage msg = new FacesMessage("Successful",  " uploaded");
                 FacesContext.getCurrentInstance().addMessage("documento", msg);
-                
+                for(int i=0; i<archivosBalanza.size();i++)
+                    System.out.println("Archivo VALIDO: "+archivosBalanza.get(i).getNombreArchivo() + " " + archivosBalanza.get(i).isValid()); 
             }
+        }else{
+            System.out.println("Numero de request: " + fileCounter);
         }
         System.out.println("fin archivo.");
         file = null;
-    }
-    
-    private String convertFileToString() throws IOException{
-      String html = new BufferedReader(new InputStreamReader(file.getInputstream(), StandardCharsets.UTF_8))
-              .lines()
-              .collect(Collectors.joining("\n"));
-      
-      return html;
     }
     
     public void save(int index){
@@ -163,6 +175,18 @@ public class ArchivoBean implements Serializable{
         }
         FacesContext.getCurrentInstance().addMessage("documento", new FacesMessage(FacesMessage.SEVERITY_INFO, "Carga exitosa!", "Tu archivo fue cargado con exito") );
         this.setFileUploaded(true);
+        LogArchivoBalanza log = new LogArchivoBalanza();
+        if(archivosBalanza.get(index).isToUpdate())
+            log.setMensaje("Archivo cargado anteriormente y fue reemplazado.");
+        else
+            log.setMensaje("Tu archivo fue cargado con exito");
+        log.setNombre(archivosBalanza.get(index).getNombreArchivo());
+        log.setFechaArchivo(archivosBalanza.get(index).getFechaBalanza());
+        log.setFechaDescarga(archivosBalanza.get(index).getFechaDescarga());
+        log.setFechaCarga(new Date());
+        log.setGuardado(true);
+        log.setNumRegistros(archivosBalanza.get(index).getNumeroRegistros());
+        LogArchivoBalanzaDao.insert(log);
         archivosBalanza.remove(index);
         archivosBalanzaIsEmpty();
     }
@@ -173,6 +197,15 @@ public class ArchivoBean implements Serializable{
     }
     
     public void disableUpload(int index){
+        LogArchivoBalanza log = new LogArchivoBalanza();
+        if(archivosBalanza.get(index).isToUpdate())
+            log.setMensaje("Archivo cargado anteriormente y no fue reemplazado.");
+        else
+            log.setMensaje("Guardado de archivo cancelado");
+        log.setNombre(archivosBalanza.get(index).getNombreArchivo());
+        log.setFechaCarga(new Date());
+        log.setNumRegistros(0);
+        LogArchivoBalanzaDao.insert(log);
         this.archivosBalanza.remove(index);
         archivosBalanzaIsEmpty();
     }
@@ -182,7 +215,7 @@ public class ArchivoBean implements Serializable{
     }
     
     public void setFileCounter(ActionEvent e){
-        String length  = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("size").toString();
+        String length  = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("size");
         System.out.println("Numero de archivos a subir: " + length );
         if(length != null) {
             fileCounter.set(Integer.parseInt(length));

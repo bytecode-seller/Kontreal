@@ -8,13 +8,15 @@
             <p:menu style="width: 160px;">
                 <p:submenu label="#{sessionBean.selectedEmpresa ne null ? sessionBean.selectedEmpresa.nombre : 'Todas Las Empresas'}">
                     <p:menuitem value="Balanza Mensual" url="/reportes/balanzas.xhtml" disabled="#{view.viewId eq '/reportes/balanzas.xhtml'}" />
-                    <p:menuitem url="/balanzaArchivo.xhtml" disabled="#{view.viewId eq '/balanzaArchivo.xhtml'}" value="Subir archivo balanza" />
                     <p:menuitem value="Relación de Saldos" url="/reportes/saldos.xhtml" />
                     <p:menuitem value="Estado de Resultados" url="/reportes/resultados.xhtml" />
                     <p:separator />
                     <p:menuitem value="Catálogo de Cuentas" url="/catalogos/cuentas.xhtml" disabled="#{view.viewId eq '/catalogos/cuentas.xhtml'}" />
-                    <p:menuitem url="/cuentasArchivo.xhtml" disabled="#{view.viewId eq '/cuentasArchivo.xhtml'}" value="Actualizar catalogo de cuentas" />
                     <p:menuitem value="Mini Catálogo" url="/catalogos/minicuentas.xhtml" disabled="#{view.viewId eq '/catalogos/minicuentas.xhtml'}" />
+                    <p:separator />
+                    <p:menuitem url="/balanzaArchivo.xhtml" disabled="#{view.viewId eq '/balanzaArchivo.xhtml'}" value="Subir archivo balanza" />
+                    <p:menuitem url="/cuentasArchivo.xhtml" disabled="#{view.viewId eq '/cuentasArchivo.xhtml'}" value="Actualizar catalogo de cuentas" />
+                    <p:menuitem url="/archivos/logsBalanza.xhtml" disabled="#{view.viewId eq '/archivos/logsBalanza.xhtml'}" value="Logs archivos balanza" />
                 </p:submenu>
             </p:menu>      
             <h:panelGrid columns="1" style="text-align: center;" width="100%">

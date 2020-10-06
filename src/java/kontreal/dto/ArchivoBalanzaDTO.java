@@ -9,11 +9,12 @@ import kontreal.entities.Balanza;
  *
  * @author Martin Tepostillo
  */
-public class ArchivoBalanzaDto implements Serializable{
+public class ArchivoBalanzaDTO implements Serializable{
 
     private static final long serialVersionUID = 1L;
     private String nombreEmpresa;
     private Date fechaBalanza;
+    private Date fechaDescarga;
     private int numeroRegistros;
     private boolean toUpdate;
     private boolean valid;
@@ -21,7 +22,7 @@ public class ArchivoBalanzaDto implements Serializable{
     private ArrayList<Balanza> registrosBalanza;
     private String nombreArchivo;
     
-    public ArchivoBalanzaDto(){
+    public ArchivoBalanzaDTO(){
         this.valid = true;
     }
     
@@ -88,5 +89,12 @@ public class ArchivoBalanzaDto implements Serializable{
     public void setNombreArchivo(String nombreArchivo) {
         this.nombreArchivo = nombreArchivo;
     }
-    
+
+    public Date getFechaDescarga() {
+        return fechaDescarga;
+    }
+
+    public void setFechaDescarga(Date fechaDescarga) {
+        this.fechaDescarga = fechaDescarga;
+    }    
 }

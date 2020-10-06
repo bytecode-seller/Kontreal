@@ -28,4 +28,11 @@ public class EmpresaDao {
         
         return (Empresa) session.createQuery("from Empresa e where e.nombre = :name").setString("name", nombreEmpresa).uniqueResult();
     }
+    
+    public static Boolean exists(String nombreEmpresa){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        return session.createQuery("from Empresa e where e.nombre = :name").setString("name", nombreEmpresa).uniqueResult() != null;
+    }
 }

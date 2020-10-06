@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="kontreal.entities.LogArchivoBalanza" table="log_archivo" catalog="contabilidad" optimistic-lock="version">
+        <id name="idLogArchivoBalanza" type="java.lang.Integer">
+            <column name="id_log" />
+            <generator class="identity" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="nombre" length="45" />
+        </property>
+        <property name="mensaje" type="string">
+            <column name="mensaje" length="100" />
+        </property>
+        <property name="fechaCarga" type="date">
+            <column name="fechaCarga" length="19" not-null="true" />
+        </property>
+        <property name="guardado" type="boolean">
+            <column name="guardado" not-null="true" default="false"/>
+        </property>
+        <property name="numRegistros" type="java.lang.Integer">
+            <column name="numRegistros" not-null="true" default="0"/>
+        </property>
+        <property name="fechaArchivo" type="date">
+            <column name="fechaArchivo" length="19"/>
+        </property>
+        <property name="fechaDescarga" type="date">
+            <column name="fechaDescarga" length="19"/>
+        </property>
+        <property name="actualizado" type="java.lang.Integer">
+            <column name="actulizado" not-null="true" default="0"/>
+        </property>
+    </class>
+</hibernate-mapping>

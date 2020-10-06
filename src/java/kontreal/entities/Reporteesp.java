@@ -68,10 +68,6 @@ public class Reporteesp  implements java.io.Serializable {
     public void setLcuentas(Set<Lcuenta> lcuentas) {
         this.lcuentas = lcuentas;
     }
-
-
-
-
 }
 
 
