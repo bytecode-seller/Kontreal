@@ -11,12 +11,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import kontreal.dao.BalanzaDao;
 import kontreal.dao.ResultadosDao;
+import kontreal.entities.Empresa;
+import kontreal.services.ResultadosService;
 import org.joda.time.DateTime;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.ChartSeries;
 
@@ -50,8 +56,12 @@ public class ShowResultadosBean implements Serializable {
     private String cuentaSup;
     private String cuentaNom;
     private boolean resumen;
+    private List<Empresa> empresas;
+    private Empresa selectedEmpresa;
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
+    @EJB
+    private ResultadosService resultadosService;
 
     public void setSessionBean(SessionBean sessionBean) {
         this.sessionBean = sessionBean;
@@ -69,21 +79,45 @@ public class ShowResultadosBean implements Serializable {
 
     @PostConstruct
     private void initData() {
-        updateData1();
+        //updateData1();
+        initEmpresas();
+        showDialog();
     }
 
     private void updateData1() {
-        System.out.println("Selected empresa: " + sessionBean.getSelectedEmpresa());
-        resultadosData = ResultadosDao.getResultados(sessionBean.getSelectedEmpresa(), ejercicio);
-        resultadosTotalData = ResultadosDao.getTotalesResultados(sessionBean.getSelectedEmpresa(), ejercicio);
-        utilidadesData = ResultadosDao.getUtilidadPerdida(sessionBean.getSelectedEmpresa(), ejercicio);
+        // System.out.println("Selected empresa: " + sessionBean.getSelectedEmpresa());
+        //resultadosData = resultadosService.getResultados(selectedEmpresa, ejercicio);
+        resultadosService.getResultados(selectedEmpresa, ejercicio);
+        // resultadosTotalData = ResultadosDao.getTotalesResultados(sessionBean.getSelectedEmpresa(), ejercicio);
+        // utilidadesData = ResultadosDao.getUtilidadPerdida(sessionBean.getSelectedEmpresa(), ejercicio);
 
-        meses = new Date[(resultadosData.get(0).length - 3) / 2];
-        for (int k = 0; k < meses.length; k++) {
-            meses[k] = new DateTime().withMonthOfYear(k + 1).dayOfMonth().withMinimumValue().toDate();
-        }
-
+//        meses = new Date[(resultadosData.get(0).length - 3) / 2];
+//        for (int k = 0; k < meses.length; k++) {
+//            meses[k] = new DateTime().withMonthOfYear(k + 1).dayOfMonth().withMinimumValue().toDate();
+//        }
         grupos = new String[]{"Ingresos", "Egresos"};
+    }
+    
+    private void initEmpresas(){
+        this.empresas = resultadosService.getAllEmpresas();
+        for(Empresa e: this.empresas)
+            System.out.println(e.getNombre());
+    }
+    
+    private void showDialog(){
+        RequestContext.getCurrentInstance().execute("PF('empresaDialog').show();");
+    }
+    
+    public void selectEmpresaDialogListener(){
+        FacesMessage errorMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Empresa no seleccionada", "Debe seleccionar una empresa antes de continuar");
+        if(this.selectedEmpresa == null){
+            FacesContext.getCurrentInstance().addMessage("selectEmpresa", errorMessage);
+        }else {
+            System.out.println("La empresa es: " + this.selectedEmpresa.getNombre());
+            RequestContext.getCurrentInstance().execute("PF('empresaDialog').hide();");
+            updateData1();
+        }
+            
     }
 
     private void updateData2() {
@@ -417,4 +451,21 @@ public class ShowResultadosBean implements Serializable {
     public String getCuentaNom() {
         return cuentaNom;
     }
+
+    public List<Empresa> getEmpresas() {
+        return empresas;
+    }
+
+    public void setEmpresas(List<Empresa> empresas) {
+        this.empresas = empresas;
+    }
+
+    public Empresa getSelectedEmpresa() {
+        return selectedEmpresa;
+    }
+
+    public void setSelectedEmpresa(Empresa selectedEmpresa) {
+        this.selectedEmpresa = selectedEmpresa;
+    }
+    
 }

@@ -23,13 +23,7 @@
                     <h:graphicImage url="/resources/images/kontreal.png" />
                     <p:spacer height="30" />
                     <h:form>
-                        <p:selectOneMenu value="#{sessionBean.empresa}" style="width: 125px;" converter="converterEmpresaGeneral" required="true" 
-                                         requiredMessage="La empresa es obligatoria.">
-                            <f:selectItems value="#{sessionBean.empresasConverter}"/>
-                        </p:selectOneMenu>
-                        <br/>
-                        <p:spacer height="10" />
-                        <p:commandButton value="Ingresar" style="width: 120px;" actionListener="#{sessionBean.empresaListener()}" update="@form elMensaje" action="consultas"/>
+                        <p:commandButton value="Ingresar" style="width: 120px;" update="@form elMensaje" action="consultas"/>
                     </h:form>
                     <p:messages id="elMensaje"/>
                     <p:spacer height="10" />

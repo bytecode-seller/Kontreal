@@ -39,6 +39,24 @@
 
                 <p:layoutUnit position="center" header="ESTADO DE RESULTADOS">
                     <h:form>
+                        <p:dialog header="Elegir empresa" widgetVar="empresaDialog" id="empresaDialog" closable="false">
+                            <br/><br/>
+                            
+                            <p:outputPanel id="dialogContent" >
+                                <p:outputLabel style="margin: auto auto; width: 100%;" >
+                                    <b>Elegir una empresa para mostrar su estado de resultados</b>
+                                </p:outputLabel>
+                                <br/>
+                                <p:selectOneMenu id="selectEmpresa" value="#{showResultadosBean.selectedEmpresa}" converter="selectOneMenuConverter" var="emp">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItems value="#{showResultadosBean.empresas}" var="empresa" itemLabel="#{empresa.nombre}" itemValue="#{empresa}"/>
+                                    <p:column>#{emp.nombre}</p:column>
+                                </p:selectOneMenu>
+                                <p:messages for="selectEmpresa" id="msjSelect"/>
+                                <br/>
+                                <p:commandButton value="Aceptar" action="#{showResultadosBean.selectEmpresaDialogListener()}" update="msjSelect @form"/>
+                            </p:outputPanel>
+                        </p:dialog>
                         <p:panel>
                             <f:facet name="header">
                                 <p:toolbar id="toolbar">

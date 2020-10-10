@@ -11,9 +11,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import kontreal.dto.ResultadosDTO;
 import kontreal.entities.Empresa;
 import kontreal.util.HibernateUtil;
+import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
 import org.joda.time.DateTime;
 
 /**
@@ -36,6 +39,8 @@ public class ResultadosDao {
 
         int maxIndices = new DateTime(maxFecha).getMonthOfYear();
         for (Object[] datarow : objQuery) {
+            System.out.println("Registro...");
+            System.out.println(datarow.toString());
             String cuenta = (String) datarow[0];
             int idxMes = new DateTime((Date) datarow[3]).getMonthOfYear() - 1;
 
@@ -57,6 +62,35 @@ public class ResultadosDao {
         }
 
         return new ArrayList<>(resultados.values());
+    }
+    
+    public static List<ResultadosDTO> getResultadosByDTO(Empresa empresa, int ejercicio){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        Query objQuery = session.createSQLQuery("select b.cuenta.cuenta as cuentaR, b.cuenta.tipo as tipoR, b.cuenta.nombre as nombreR, b.fecha as fechaR, "
+                + "b.cargos as cargosR, b.abonos as abonosR, b.saldofin as saldofinR from Balanza b, Cueresultados c "
+                + "where b.cuenta.empresa = :emp and b.cuenta = c.cuenta and YEAR(b.fecha) = :eje order by b.cuenta, b.fecha")
+                .setEntity("emp", empresa)
+                .setInteger("eje", ejercicio);
+        
+        Query q = objQuery.setResultTransformer(Transformers.aliasToBean(ResultadosDTO.class));
+        
+        List<ResultadosDTO> r = q.list();
+        ResultadosDTO rd = r.get(0);
+        System.out.println("Resultado: " + rd.getNombreR());
+        
+        return r;
+    }
+    
+    public static Date getMaxfecha(Empresa empresa, int ejercicio){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        
+        Date maxFecha = (Date) session.createQuery("select max(b.fecha) from Balanza b where b.cuenta.empresa = :emp and YEAR(b.fecha) = :eje")
+                .setEntity("emp", empresa).setInteger("eje", ejercicio).uniqueResult();
+        
+        return maxFecha;
     }
 
     public static List<Object[]> getResultados(Empresa empresa, int ejercicio, String ctaSup) {
