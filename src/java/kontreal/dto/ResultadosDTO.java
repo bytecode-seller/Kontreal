@@ -1,89 +1,70 @@
 package kontreal.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Martin Tepostillo
  */
 public class ResultadosDTO implements Serializable{
-    private String cuentaR;
-    private String tipoR;
-    private String nombreR;
-    private Date fechaR;
-    private double cargosR;
-    private double abonosR;
-    private double saldofinR;
+    private String cuenta;
+    private String tipo;
+    private String nombre;
+    private List<Double> resultadosAc;
+    private List<Double> resultadosFin;
     
     public ResultadosDTO(){
-    
-    }
-    
-    public ResultadosDTO(String cuentaR, String tipoR, String nombreR, Date fechaR, double cargosR, double abonosR, double saldofinR){
-        this.cuentaR = cuentaR;
-        this.tipoR = tipoR;
-        this.nombreR = nombreR;
-        this.fechaR = fechaR;
-        this.cargosR = cargosR;
-        this.abonosR = abonosR;
-        this.saldofinR = saldofinR;
+        this.resultadosAc = new ArrayList<>();
+        this.resultadosFin = new ArrayList<>();
     }
 
-    public String getCuentaR() {
-        return cuentaR;
+    public String getCuenta() {
+        return cuenta;
     }
 
-    public void setCuentaR(String cuentaR) {
-        this.cuentaR = cuentaR;
+    public void setCuenta(String cuenta) {
+        this.cuenta = cuenta;
     }
 
-    public String getTipoR() {
-        return tipoR;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setTipoR(String tipoR) {
-        this.tipoR = tipoR;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
-    public String getNombreR() {
-        return nombreR;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNombreR(String nombreR) {
-        this.nombreR = nombreR;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public Date getFechaR() {
-        return fechaR;
+    public List<Double> getResultadosAc() {
+        return resultadosAc;
     }
 
-    public void setFechaR(Date fechaR) {
-        this.fechaR = fechaR;
+    public void setResultadosAc(List<Double> resultadosAc) {
+        this.resultadosAc = resultadosAc;
     }
 
-    public double getCargosR() {
-        return cargosR;
+    public List<Double> getResultadosFin() {
+        return resultadosFin;
     }
 
-    public void setCargosR(double cargosR) {
-        this.cargosR = cargosR;
-    }
-
-    public double getAbonosR() {
-        return abonosR;
-    }
-
-    public void setAbonosR(double abonosR) {
-        this.abonosR = abonosR;
-    }
-
-    public double getSaldofinR() {
-        return saldofinR;
-    }
-
-    public void setSaldofinR(double saldofinR) {
-        this.saldofinR = saldofinR;
+    public void setResultadosFin(List<Double> resultadosFin) {
+        this.resultadosFin = resultadosFin;
     }
     
+    public void addResultadosAc(Double resultadoAc){
+        this.resultadosAc.add(resultadoAc);
+    }
+    
+    public void addResultadosFin(Double resultadofin){
+        this.resultadosFin.add(resultadofin);
+    }
 }

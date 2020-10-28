@@ -90,22 +90,22 @@
                                             </c:forEach>
                                         </p:row>
 
-                                        <c:forEach items="#{showResultadosBean.resultadosData}" var="res">
-                                            <c:if test="#{grupo eq 'Ingresos' and res[1] eq 'H RESULTADOS AC' or grupo eq 'Egresos' and res[1] eq 'G RESULTADOS DE'}">
+                                        <c:forEach items="#{showResultadosBean.resultadosData}" var="res" begin="0">
+                                            <c:if test="#{grupo eq 'Ingresos' and res.tipo eq 'H RESULTADOS ACREEDORA' or grupo eq 'Egresos' and res.tipo eq 'G RESULTADOS DEUDORA'}">
                                                 <p:row>
                                                     <p:column rowspan="2" style="background-color: papayawhip;">
                                                         <h:panelGrid columns="3" styleClass="ui-panelgrid-mine">
-                                                            <p:commandLink actionListener="#{showResultadosBean.chart2Listener(res[0])}" update=":chart1" oncomplete="PF('widgetChart1').show();" title="Gráfica">
+                                                            <p:commandLink actionListener="#{showResultadosBean.chart2Listener(res.cuenta)}" update=":chart1" oncomplete="PF('widgetChart1').show();" title="Gráfica">
                                                                 <h:graphicImage url="/resources/images/Bar-chart.png" height="25%" />
                                                             </p:commandLink>
                                                             <p:spacer width="3"/>
-                                                            <p:commandLink value="#{res[2]}" actionListener="#{showResultadosBean.detalleListener(res[2], res[0])}" process="@this" update="@form" title="Sub-cuentas"/>
+                                                            <p:commandLink value="#{res.nombre}" actionListener="#{showResultadosBean.detalleListener(res.nombre, res.cuenta)}" process="@this" update="@form" title="Sub-cuentas"/>
                                                         </h:panelGrid>
                                                     </p:column>
                                                     <p:column>
                                                         <h:outputText value="Del Mes"/>
                                                     </p:column>
-                                                    <c:forEach items="#{res}" var="data" begin="3" step="2">
+                                                    <c:forEach items="#{res.resultadosAc}" var="data" begin="0">
                                                         <p:column style="text-align: right;font-size: smaller;">
                                                             <h:outputText value="#{data}">
                                                                 <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
@@ -117,7 +117,7 @@
                                                     <p:column style="background-color: beige;">
                                                         <h:outputText value="Acumulado"/>
                                                     </p:column>
-                                                    <c:forEach items="#{res}" var="data" begin="4" step="2">
+                                                    <c:forEach items="#{res.resultadosFin}" var="data" >
                                                         <p:column style="text-align: right;background-color: beige;">
                                                             <h:outputText value="#{data}">
                                                                 <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
@@ -129,11 +129,11 @@
                                         </c:forEach>
 
                                         <c:forEach items="#{showResultadosBean.resultadosTotalData}" var="tot">
-                                            <c:if test="#{grupo eq 'Ingresos' and tot[0] eq 'H RESULTADOS AC' or grupo eq 'Egresos' and tot[0] eq 'G RESULTADOS DE'}">
+                                            <c:if test="#{grupo eq 'Ingresos' and tot.tipo eq 'H RESULTADOS ACREEDORA' or grupo eq 'Egresos' and tot.tipo eq 'G RESULTADOS DEUDORA'}">
                                                 <p:row>
                                                     <p:column rowspan="2" style="background-color: papayawhip;">
                                                         <h:panelGrid columns="3" styleClass="ui-panelgrid-mine">
-                                                            <p:commandLink actionListener="#{showResultadosBean.chart3Listener(tot[0])}" update=":chart1" oncomplete="PF('widgetChart1').show();" title="Gráfica">
+                                                            <p:commandLink actionListener="#{showResultadosBean.chart3Listener(tot.tipo)}" update=":chart1" oncomplete="PF('widgetChart1').show();" title="Gráfica">
                                                                 <h:graphicImage url="/resources/images/Bar-chart.png" height="25%" />
                                                             </p:commandLink>
                                                             <p:spacer width="3"/>
@@ -143,7 +143,7 @@
                                                     <p:column>
                                                         <h:outputText value="Del Mes"/>
                                                     </p:column>
-                                                    <c:forEach items="#{tot}" var="data" begin="1" step="2">
+                                                    <c:forEach items="#{tot.resultadosAcreedora}" var="data" begin="0">
                                                         <p:column style="text-align: right;font-size: smaller;">
                                                             <h:outputText value="#{data}">
                                                                 <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
@@ -155,7 +155,7 @@
                                                     <p:column style="background-color: beige;">
                                                         <h:outputText value="Acumulado"/>
                                                     </p:column>
-                                                    <c:forEach items="#{tot}" var="data" begin="2" step="2">
+                                                    <c:forEach items="#{tot.resultadosDeudora}" var="data" begin="0">
                                                         <p:column style="text-align: right;background-color: beige;">
                                                             <h:outputText value="#{data}">
                                                                 <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
@@ -207,7 +207,7 @@
                                         </p:column>
                                         <c:forEach items="#{showResultadosBean.utilidadesData}" var="pergan">
                                             <p:column style="text-align: right;font-size: smaller;">
-                                                <h:outputText value="#{pergan[1]}">
+                                                <h:outputText value="#{pergan.cargosAbonos}">
                                                     <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
                                                 </h:outputText>
                                             </p:column>
@@ -220,7 +220,7 @@
                                         </p:column>
                                         <c:forEach items="#{showResultadosBean.utilidadesData}" var="pergan">
                                             <p:column style="text-align: right;background-color: beige;">
-                                                <h:outputText value="#{pergan[2]}">
+                                                <h:outputText value="#{pergan.saldofin}">
                                                     <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
                                                 </h:outputText>
                                             </p:column>
@@ -252,17 +252,17 @@
                                         <p:row>
                                             <p:column rowspan="2" style="background-color: tan;">
                                                 <h:panelGrid columns="3" styleClass="ui-panelgrid-mine">
-                                                    <p:commandLink actionListener="#{showResultadosBean.chart2Listener(res[0])}" update=":chart1" oncomplete="PF('widgetChart1').show();" title="Gráfica">
+                                                    <p:commandLink actionListener="#{showResultadosBean.chart2Listener(res.cuenta)}" update=":chart1" oncomplete="PF('widgetChart1').show();" title="Gráfica">
                                                         <h:graphicImage url="/resources/images/Bar-chart.png" height="25%" />
                                                     </p:commandLink>
                                                     <p:spacer width="3"/>
-                                                    <h:outputText value="#{res[2]}"/>
+                                                    <h:outputText value="#{res.nombre}"/>
                                                 </h:panelGrid>
                                             </p:column>
                                             <p:column>
                                                 <h:outputText value="Del Mes"/>
                                             </p:column>
-                                            <c:forEach items="#{res}" var="data" begin="3" step="2">
+                                            <c:forEach items="#{res.resultadosAc}" var="data" begin="0">
                                                 <p:column style="text-align: right;font-size: smaller;">
                                                     <h:outputText value="#{data}">
                                                         <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
@@ -274,7 +274,7 @@
                                             <p:column style="background-color: beige;">
                                                 <h:outputText value="Acumulado"/>
                                             </p:column>
-                                            <c:forEach items="#{res}" var="data" begin="4" step="2">
+                                            <c:forEach items="#{res.resultadosFin}" var="data" begin="0">
                                                 <p:column style="text-align: right;background-color: beige;">
                                                     <h:outputText value="#{data}">
                                                         <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
@@ -288,7 +288,7 @@
                                         <p:row>
                                             <p:column rowspan="2" style="background-color: tan;">
                                                 <h:panelGrid columns="3" styleClass="ui-panelgrid-mine">
-                                                    <p:commandLink actionListener="#{showResultadosBean.chart3Listener(tot[0])}" update=":chart1" oncomplete="PF('widgetChart1').show();" title="Gráfica">
+                                                    <p:commandLink actionListener="#{showResultadosBean.chart3Listener(tot.tipo)}" update=":chart1" oncomplete="PF('widgetChart1').show();" title="Gráfica">
                                                         <h:graphicImage url="/resources/images/Bar-chart.png" height="25%" />
                                                     </p:commandLink>
                                                     <p:spacer width="3"/>
@@ -298,7 +298,7 @@
                                             <p:column>
                                                 <h:outputText value="Del Mes"/>
                                             </p:column>
-                                            <c:forEach items="#{tot}" var="data" begin="1" step="2">
+                                            <c:forEach items="#{tot.resultadosAcreedora}" var="data" begin="0" >
                                                 <p:column style="text-align: right;font-size: smaller;">
                                                     <h:outputText value="#{data}">
                                                         <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
@@ -310,7 +310,7 @@
                                             <p:column style="background-color: beige;">
                                                 <h:outputText value="Acumulado"/>
                                             </p:column>
-                                            <c:forEach items="#{tot}" var="data" begin="2" step="2">
+                                            <c:forEach items="#{tot.resultadosDeudora}" var="data" begin="0" >
                                                 <p:column style="text-align: right;background-color: beige;">
                                                     <h:outputText value="#{data}">
                                                         <f:convertNumber type="currency" pattern="$&nbsp;#,##0;$&nbsp;(#,##0)"/>
@@ -341,19 +341,15 @@
 
             <p:dialog header="GRÁFICA COMPORTAMIENTO (1)" widgetVar="widgetChart1" resizable="false" showEffect="fade"
                       hideEffect="fold" width="75%" modal="true" dynamic="true">
-                <p:panel id="chart1" header="#x{showResultadosBean.tituloChart}">
-                    <!-- p:accordionPanel dynamic="true">
+                <p:panel id="chart1" header="#{showResultadosBean.tituloChart}">
+                     <p:accordionPanel dynamic="true">
                         <p:tab title="Gráfica de Barras">
-                            <p:barChart value="#x{showResultadosBean.chart1}" seriesColors="045491, 008200" legendPosition="nw"
-                                        title="Ejercicio #x{showResultadosBean.ejercicio}" extender="chartExternder" barMargin="5"
-                                        xaxisLabel="Promedio: #x{showResultadosBean.promedioChart}"/>
+                            <p:chart type="bar" model="#{showResultadosBean.chart1}"/>
                         </p:tab>
                         <p:tab title="Gráfica de Áreas">
-                            <p:lineChart value="#x{showResultadosBean.chart2}" seriesColors="008200, 045491" legendPosition="nw"
-                                         title="Ejercicio #x{showResultadosBean.ejercicio}" extender="chartExternder" fill="true"
-                                         xaxisLabel="Promedio: #x{showResultadosBean.promedioChart}"/>
+                            <p:chart type="line" model="#{showResultadosBean.chart2}"/>
                         </p:tab>
-                    </p:accordionPanel -->
+                     </p:accordionPanel>
                 </p:panel>
                 <p:separator/>
                 <p:commandButton value="Aceptar" icon="ui-icon-check" process="@this" oncomplete="PF('widgetChart1').hide();"/>

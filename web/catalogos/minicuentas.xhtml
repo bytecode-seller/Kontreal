@@ -107,9 +107,9 @@
                                     </p:toolbar>
                                 </f:facet>
 
-                                <p:column selectionMode="multiple" sortBy="#{cuenta.cuenta}" sortFunction="#{showMinicatalogosBean.sortBySelection(cuenta)}" style="text-align: center;" width="10%"/>
-                                <p:column headerText="Cuenta" filterBy="#{cuenta.cuenta}" filterStyle="width: 50px" width="24%">
-                                    <p:outputLabel value="#{cuenta.cuenta}"/>
+                                <p:column selectionMode="multiple" sortBy="#{cuenta.numeroCuenta}" sortFunction="#{showMinicatalogosBean.sortBySelection(cuenta)}" style="text-align: center;" width="10%"/>
+                                <p:column headerText="Cuenta" filterBy="#{cuenta.numeroCuenta}" filterStyle="width: 50px" width="24%">
+                                    <p:outputLabel value="#{cuenta.numeroCuenta}"/>
                                 </p:column>
                                 <p:column headerText="Nombre" filterBy="#{cuenta.nombre}" filterStyle="width: 50px" width="48%">
                                     <p:outputLabel value="#{cuenta.nombre}"/>

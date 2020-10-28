@@ -112,7 +112,7 @@ public class ConceptosBean implements Serializable {
         cuentasConverter.put("- Selecciona -", null);
 
         for (Cuenta cue : CuentaDao.searchGastos(selectedEmpresa)) {
-            cuentasConverter.put(cue.getCuenta() + " - " + cue.getNombre(), cue);
+            cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
         }
     }
 

@@ -96,8 +96,8 @@
                             <p:column id="nivel" headerText="Nivel" style="text-align: center;" width="6%">
                                 <p:outputLabel value="#{balanza.cuenta.nivel}"/>
                             </p:column>
-                            <p:column id="cuenta" headerText="Cuenta" sortBy="#{balanza.cuenta.cuenta}" filterBy="#{balanza.cuenta.cuenta}" filterMatchMode="startsWith" filterStyle="width: 50px" width="10%">
-                                <p:outputLabel value="#{balanza.cuenta.cuenta}"/>
+                            <p:column id="cuenta" headerText="Cuenta" sortBy="#{balanza.cuenta.numeroCuenta}" filterBy="#{balanza.cuenta.numeroCuenta}" filterMatchMode="startsWith" filterStyle="width: 50px" width="10%">
+                                <p:outputLabel value="#{balanza.cuenta.numeroCuenta}"/>
                             </p:column>
                             <p:column headerText="Nombre" filterBy="#{balanza.cuenta.nombre}" filterMatchMode="contains" filterStyle="width: 75px" width="21%">
                                 <p:outputLabel value="#{balanza.cuenta.nombre}"/>

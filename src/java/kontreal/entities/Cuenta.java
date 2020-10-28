@@ -15,7 +15,7 @@ public class Cuenta  implements java.io.Serializable {
      private Integer idCuenta;
      private Empresa empresa;
      private Integer nivel;
-     private String cuenta;
+     private String numeroCuenta;
      private String nombre;
      private String tipo;
      private String afecta;
@@ -33,17 +33,17 @@ public class Cuenta  implements java.io.Serializable {
     }
 
 
-    public Cuenta(Empresa empresa, String cuenta, String divisa, Date fecha, Date updated) {
+    public Cuenta(Empresa empresa, String numeroCuenta, String divisa, Date fecha, Date updated) {
         this.empresa = empresa;
-        this.cuenta = cuenta;
+        this.numeroCuenta = numeroCuenta;
         this.divisa = divisa;
         this.fecha = fecha;
         this.updated = updated;
     }
-    public Cuenta(Empresa empresa, Integer nivel, String cuenta, String nombre, String tipo, String afecta, String dig, String edo, String divisa, Date fecha, Date updated, Set<Balanza> balanzas, Set<Cueresultados> cueresultadoses, Set<Lcuenta> lcuentas, Set<Concepto> conceptos) {
+    public Cuenta(Empresa empresa, Integer nivel, String numeroCuenta, String nombre, String tipo, String afecta, String dig, String edo, String divisa, Date fecha, Date updated, Set<Balanza> balanzas, Set<Cueresultados> cueresultadoses, Set<Lcuenta> lcuentas, Set<Concepto> conceptos) {
        this.empresa = empresa;
        this.nivel = nivel;
-       this.cuenta = cuenta;
+       this.numeroCuenta = numeroCuenta;
        this.nombre = nombre;
        this.tipo = tipo;
        this.afecta = afecta;
@@ -79,12 +79,12 @@ public class Cuenta  implements java.io.Serializable {
     public void setNivel(Integer nivel) {
         this.nivel = nivel;
     }
-    public String getCuenta() {
-        return this.cuenta;
+    public String getNumeroCuenta() {
+        return this.numeroCuenta;
     }
 
-    public void setCuenta(String cuenta) {
-        this.cuenta = cuenta;
+    public void setNumeroCuenta(String numeroCuenta) {
+        this.numeroCuenta = numeroCuenta;
     }
     public String getNombre() {
         return this.nombre;

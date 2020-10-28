@@ -62,7 +62,7 @@ public class CuentaDao {
 
         List<Cuenta> cuentas = new ArrayList<>();
         if (empresa != null) {
-            cuentas = session.createQuery("from Cuenta c where c.empresa = :emp order by c.cuenta").setEntity("emp", empresa).list();
+            cuentas = session.createQuery("from Cuenta c where c.empresa = :emp order by c.numeroCuenta").setEntity("emp", empresa).list();
         }
         
         return cuentas;
@@ -74,10 +74,10 @@ public class CuentaDao {
 
         List<Cuenta> cuentas;
         if (empresa != null) {
-            cuentas = session.createQuery("select distinct c from Cuenta c where c.nivel = 3 and c.empresa = :emp group by c.cuenta order by c.cuenta")
+            cuentas = session.createQuery("select distinct c from Cuenta c where c.nivel = 3 and c.empresa = :emp group by c.numeroCuenta order by c.numeroCuenta")
                     .setEntity("emp", empresa).list();
         } else {
-            cuentas = session.createQuery("select distinct c from Cuenta c where c.nivel = 3 group by c.cuenta order by c.cuenta").list();
+            cuentas = session.createQuery("select distinct c from Cuenta c where c.nivel = 3 group by c.numeroCuenta order by c.numeroCuenta").list();
         }
         
         return cuentas;
@@ -97,14 +97,14 @@ public class CuentaDao {
         HibernateUtil.beginTransaction();
         Session session = HibernateUtil.getSession();
         return session.createQuery("from Cuenta c where c.empresa = :emp and tipo like 'G R%' and afecta = 'AFECTABLE' "
-                + "order by c.cuenta").setEntity("emp", empresa).list();
+                + "order by c.numeroCuenta").setEntity("emp", empresa).list();
     }
 
     public static Cuenta searchByCuentaAndEmpresa(String cuenta, String empresa){
         HibernateUtil.beginTransaction();
         Session session = HibernateUtil.getSession();
         
-        return (Cuenta)session.createQuery("from Cuenta c where c.cuenta = :cue and c.empresa.nombre = :emp")
+        return (Cuenta)session.createQuery("from Cuenta c where c.numeroCuenta = :cue and c.empresa.nombre = :emp")
                 .setString("cue", cuenta)
                 .setString("emp", empresa)
                 .uniqueResult();

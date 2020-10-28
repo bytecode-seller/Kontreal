@@ -78,12 +78,12 @@ public class ShowSaldosBean implements Serializable {
 
         if(sessionBean.getSelectedEmpresa() == null){
             for (Cuenta cue : CuentaDao.findAll()) {
-                cuentasConverter.put(cue.getCuenta() + " - " + cue.getNombre(), cue);
+                cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
             }
         }
         else
         for (Cuenta cue : CuentaDao.searchAll(sessionBean.getSelectedEmpresa())) {
-            cuentasConverter.put(cue.getCuenta() + " - " + cue.getNombre(), cue);
+            cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
         }
     }
 

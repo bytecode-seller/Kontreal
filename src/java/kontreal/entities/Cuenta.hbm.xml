@@ -14,8 +14,8 @@
         <property name="nivel" type="java.lang.Integer">
             <column name="nivel" />
         </property>
-        <property name="cuenta" type="string">
-            <column name="cuenta" length="15" not-null="true" />
+        <property name="numeroCuenta" type="string">
+            <column name="numero_cuenta" length="15" not-null="true" />
         </property>
         <property name="nombre" type="string">
             <column name="nombre" length="60" />

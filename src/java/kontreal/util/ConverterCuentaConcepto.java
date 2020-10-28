@@ -34,7 +34,7 @@ public class ConverterCuentaConcepto implements Converter, Serializable {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return (value instanceof Cuenta) ? ((Cuenta) value).getCuenta() + " - " + ((Cuenta) value).getNombre() : "";
+        return (value instanceof Cuenta) ? ((Cuenta) value).getNumeroCuenta() + " - " + ((Cuenta) value).getNombre() : "";
     }
 
 }

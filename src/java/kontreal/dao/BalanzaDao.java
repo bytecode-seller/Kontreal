@@ -50,8 +50,8 @@ public class BalanzaDao {
                     .setEntity("emp", empresa).setDate("fec", fecha).setInteger("niv", nivel).setString("regx", regExp.toString());
         } else {
             query = session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where b.fecha = :fec and b.cuenta.nivel " + nivelQry + " :niv and b.cuenta.cuenta REGEXP :regx "
-                    + "order by b.cuenta.tipo, b.cuenta.cuenta").setDate("fec", fecha).setInteger("niv", nivel).setString("regx", regExp.toString());
+                    + "where b.fecha = :fec and b.cuenta.nivel " + nivelQry + " :niv and b.cuenta.numeroCuenta REGEXP :regx "
+                    + "order by b.cuenta.tipo, b.cuenta.numeroCuenta").setDate("fec", fecha).setInteger("niv", nivel).setString("regx", regExp.toString());
         }
 
         return query.list();
@@ -63,11 +63,11 @@ public class BalanzaDao {
 
         if (empresa != null) {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where e = :emp and c = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.cuenta")
+                    + "where e = :emp and c = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
                     .setEntity("emp", empresa).setEntity("cue", cuenta).setInteger("eje", ejercicio).list();
         } else {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where c = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.cuenta")
+                    + "where c = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
                     .setEntity("cue", cuenta).setInteger("eje", ejercicio).list();
         }
     }
@@ -83,7 +83,7 @@ public class BalanzaDao {
         if (empresa != null) {
             queryStr.append("this.cuenta.empresa = :emp and ");
         }
-        queryStr.append("b.cuenta = this.cuenta and b.fecha = :fec order by b.cuenta.empresa, b.cuenta.tipo, b.cuenta.cuenta");
+        queryStr.append("b.cuenta = this.cuenta and b.fecha = :fec order by b.cuenta.empresa, b.cuenta.tipo, b.cuenta.numeroCuenta");
 
         Query query = session.createFilter(reporte.getLcuentas(), queryStr.toString()).setDate("fec", fecha);
         if (empresa != null) {

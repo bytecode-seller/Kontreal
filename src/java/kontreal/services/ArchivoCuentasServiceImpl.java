@@ -110,7 +110,7 @@ public class ArchivoCuentasServiceImpl implements ArchivoCuentasService{
             }
 
             c.setNivel(Integer.parseInt(elements.get(i).child(NIVEL).text()));
-            c.setCuenta(elements.get(i).child(CUENTA).text());
+            c.setNumeroCuenta(elements.get(i).child(CUENTA).text());
             c.setNombre(elements.get(i).child(NOMBRE).text().toUpperCase());
             c.setTipo(elements.get(i).child(TIPO).text().toUpperCase());
             c.setAfecta(elements.get(i).child(AFECTA).text().toUpperCase());

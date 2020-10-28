@@ -90,9 +90,9 @@
                                 <h:outputText value="#{saldos.cuenta.nivel}"/>
                             </p:column>
                             <p:column id="cuenta" headerText="Cuenta" width="13%">
-                                <p:commandLink value="#{saldos.cuenta.cuenta}" rendered="#{saldos.cuenta.nivel eq 2 or saldos.cuenta.nivel eq 3}"
-                                               onstart="filterEvent('#{saldos.cuenta.cuenta}'), PF('widgetTable').filter();" style="color: chocolate;"/>
-                                <h:outputText value="#{saldos.cuenta.cuenta}" rendered="#{saldos.cuenta.nivel lt 2 or saldos.cuenta.nivel gt 3}"/>
+                                <p:commandLink value="#{saldos.cuenta.numeroCuenta}" rendered="#{saldos.cuenta.nivel eq 2 or saldos.cuenta.nivel eq 3}"
+                                               onstart="filterEvent('#{saldos.cuenta.numeroCuenta}'), PF('widgetTable').filter();" style="color: chocolate;"/>
+                                <h:outputText value="#{saldos.cuenta.numeroCuenta}" rendered="#{saldos.cuenta.nivel lt 2 or saldos.cuenta.nivel gt 3}"/>
                             </p:column>
                             <p:column headerText="Nombre" width="17%">
                                 <h:outputText value="#{saldos.cuenta.nombre}"/>

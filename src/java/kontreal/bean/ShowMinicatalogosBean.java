@@ -69,7 +69,7 @@ public class ShowMinicatalogosBean implements Serializable {
             cuentasData = new ArrayList<>(innerCuentasData);
             for (Lminicatalogo lmini : selectedMinicatalogo.getLminicatalogos()) {
                 for (Cuenta cuenta : cuentasData) {
-                    if (lmini.getCuenta().trim().equals(cuenta.getCuenta().trim())) {
+                    if (lmini.getCuenta().trim().equals(cuenta.getNumeroCuenta().trim())) {
                         selectedCuentas.add(cuenta);
                         break;
                     }
@@ -106,7 +106,7 @@ public class ShowMinicatalogosBean implements Serializable {
         selectedCuentas = new ArrayList<>();
         for (Lminicatalogo lmini : selectedMinicatalogo.getLminicatalogos()) {
             for (Cuenta cuenta : cuentasData) {
-                if (lmini.getCuenta().trim().equals(cuenta.getCuenta().trim())) {
+                if (lmini.getCuenta().trim().equals(cuenta.getNumeroCuenta().trim())) {
                     selectedCuentas.add(cuenta);
                     break;
                 }
@@ -120,7 +120,7 @@ public class ShowMinicatalogosBean implements Serializable {
         for (Cuenta cuenta : selectedCuentas) {
             boolean found = false;
             for (Lminicatalogo lmini : selectedMinicatalogo.getLminicatalogos()) {
-                if (lmini.getCuenta().trim().equals(cuenta.getCuenta().trim())) {
+                if (lmini.getCuenta().trim().equals(cuenta.getNumeroCuenta().trim())) {
                     found = true;
                     break;
                 }
@@ -128,7 +128,7 @@ public class ShowMinicatalogosBean implements Serializable {
 
             if (!found) {
                 StringBuilder regExp = new StringBuilder();
-                String[] subLevel = cuenta.getCuenta().split("-");
+                String[] subLevel = cuenta.getNumeroCuenta().split("-");
                 for (int indx = 0; indx < subLevel.length; ++indx) { //It should be indx++ ??
                     if (subLevel[indx].matches("^0*$")) {
                         regExp.append(indx == 0 ? "^" + subLevel[indx] : "-.*");
@@ -138,7 +138,7 @@ public class ShowMinicatalogosBean implements Serializable {
                 }
 
                 selectedMinicatalogo.getLminicatalogos()
-                        .add(new Lminicatalogo(selectedMinicatalogo, cuenta.getCuenta(), cuenta.getNombre(), cuenta.getTipo().substring(0, 1), regExp.toString(),
+                        .add(new Lminicatalogo(selectedMinicatalogo, cuenta.getNumeroCuenta(), cuenta.getNombre(), cuenta.getTipo().substring(0, 1), regExp.toString(),
                                 TODAY));
             }
         }
@@ -148,7 +148,7 @@ public class ShowMinicatalogosBean implements Serializable {
             Lminicatalogo lmini = (Lminicatalogo) iter.next();
             boolean found = false;
             for (Cuenta cuenta : selectedCuentas) {
-                if (lmini.getCuenta().trim().equals(cuenta.getCuenta().trim())) {
+                if (lmini.getCuenta().trim().equals(cuenta.getNumeroCuenta().trim())) {
                     found = true;
                     break;
                 }

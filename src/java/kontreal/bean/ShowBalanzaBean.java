@@ -89,19 +89,19 @@ public class ShowBalanzaBean implements Serializable {
             while (iter.hasNext()) {
                 Balanza bal = (Balanza) iter.next();
                 if (!grupo.contains("1") && (bal.getCuenta().getTipo().equals("A ACTIVO DEUDOR") || bal.getCuenta().getTipo().equals("B ACTIVO ACREED"))) {
-                    if (!grupo.contains("5") && bal.getCuenta().getCuenta().startsWith("103")) {
+                    if (!grupo.contains("5") && bal.getCuenta().getNumeroCuenta().startsWith("103")) {
                         iter.remove();
                         continue;
-                    } else if (!bal.getCuenta().getCuenta().startsWith("103")) {
+                    } else if (!bal.getCuenta().getNumeroCuenta().startsWith("103")) {
                         iter.remove();
                         continue;
                     }
                 }
                 if (!grupo.contains("2") && bal.getCuenta().getTipo().equals("D PASIVO ACREED")) {
-                    if (!grupo.contains("6") && bal.getCuenta().getCuenta().startsWith("200")) {
+                    if (!grupo.contains("6") && bal.getCuenta().getNumeroCuenta().startsWith("200")) {
                         iter.remove();
                         continue;
-                    } else if (!bal.getCuenta().getCuenta().startsWith("200")) {
+                    } else if (!bal.getCuenta().getNumeroCuenta().startsWith("200")) {
                         iter.remove();
                         continue;
                     }
@@ -114,11 +114,11 @@ public class ShowBalanzaBean implements Serializable {
                     iter.remove();
                     continue;
                 }
-                if (!grupo.contains("5") && bal.getCuenta().getCuenta().startsWith("103")) {
+                if (!grupo.contains("5") && bal.getCuenta().getNumeroCuenta().startsWith("103")) {
                     iter.remove();
                     continue;
                 }
-                if (!grupo.contains("6") && bal.getCuenta().getCuenta().startsWith("200")) {
+                if (!grupo.contains("6") && bal.getCuenta().getNumeroCuenta().startsWith("200")) {
                     iter.remove();
                 }
             }
@@ -208,13 +208,13 @@ public class ShowBalanzaBean implements Serializable {
         subTotales = new double[]{0.00, 0.00, 0.00, 0.00};
 
         String sortValue = (sortColumn == 0 ? balanza.getCuenta().getEmpresa().getNombre()
-                : sortColumn == 1 ? balanza.getCuenta().getCuenta() : balanza.getCuenta().getTipo());
+                : sortColumn == 1 ? balanza.getCuenta().getNumeroCuenta() : balanza.getCuenta().getTipo());
 
         String sortKey;
         boolean previuslyFound = false;
         for (Balanza balFilter : balanzasFilter) {
             sortKey = (sortColumn == 0 ? balFilter.getCuenta().getEmpresa().getNombre()
-                    : sortColumn == 1 ? balFilter.getCuenta().getCuenta() : balFilter.getCuenta().getTipo());
+                    : sortColumn == 1 ? balFilter.getCuenta().getNumeroCuenta() : balFilter.getCuenta().getTipo());
             if (sortKey.equals(sortValue)) {
                 subTotales[0] += balFilter.getSaldoini();
                 subTotales[1] += balFilter.getCargos();

@@ -18,13 +18,20 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import kontreal.dao.BalanzaDao;
-import kontreal.dao.ResultadosDao;
+import kontreal.dto.ResultadosDTO;
+import kontreal.dto.ResultadosTotalesDTO;
+import kontreal.dto.UtilidadPerdidaDTO;
 import kontreal.entities.Empresa;
 import kontreal.services.ResultadosService;
 import org.joda.time.DateTime;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.ChartSeries;
+import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LineChartSeries;
 
 /**
  *
@@ -46,9 +53,9 @@ public class ShowResultadosBean implements Serializable {
     private double sumEgresoMes;
     private String promedioChart;
     private String tituloChart;
-    private List<Object[]> resultadosData;
-    private List<Object[]> resultadosTotalData;
-    private List<Object[]> utilidadesData;
+    private List<ResultadosDTO> resultadosData;
+    private List<ResultadosTotalesDTO> resultadosTotalData;
+    private List<UtilidadPerdidaDTO> utilidadesData;
     private final List<Integer> ejercicios;
     private String[] grupos;
     private Date[] meses;
@@ -79,29 +86,27 @@ public class ShowResultadosBean implements Serializable {
 
     @PostConstruct
     private void initData() {
-        //updateData1();
         initEmpresas();
         showDialog();
     }
 
-    private void updateData1() {
-        // System.out.println("Selected empresa: " + sessionBean.getSelectedEmpresa());
-        //resultadosData = resultadosService.getResultados(selectedEmpresa, ejercicio);
-        resultadosService.getResultados(selectedEmpresa, ejercicio);
-        // resultadosTotalData = ResultadosDao.getTotalesResultados(sessionBean.getSelectedEmpresa(), ejercicio);
-        // utilidadesData = ResultadosDao.getUtilidadPerdida(sessionBean.getSelectedEmpresa(), ejercicio);
+    private void getResultados() {
+        resultadosData = resultadosService.getResultados(selectedEmpresa, ejercicio);
+        resultadosTotalData = resultadosService.getResultadosTotales(this.selectedEmpresa, ejercicio);
+        utilidadesData = resultadosService.getUtilidadPerdida(this.selectedEmpresa, ejercicio);
 
-//        meses = new Date[(resultadosData.get(0).length - 3) / 2];
-//        for (int k = 0; k < meses.length; k++) {
-//            meses[k] = new DateTime().withMonthOfYear(k + 1).dayOfMonth().withMinimumValue().toDate();
-//        }
+        meses = new Date[resultadosData.get(0).getResultadosAc().size()];
+        for (int k = 0; k < meses.length; k++) {
+            meses[k] = new DateTime().withMonthOfYear(k + 1).dayOfMonth().withMinimumValue().toDate();
+        }
         grupos = new String[]{"Ingresos", "Egresos"};
     }
     
+    /**
+     * Gets empresas availables and initializes them.
+     */
     private void initEmpresas(){
         this.empresas = resultadosService.getAllEmpresas();
-        for(Empresa e: this.empresas)
-            System.out.println(e.getNombre());
     }
     
     private void showDialog(){
@@ -115,14 +120,18 @@ public class ShowResultadosBean implements Serializable {
         }else {
             System.out.println("La empresa es: " + this.selectedEmpresa.getNombre());
             RequestContext.getCurrentInstance().execute("PF('empresaDialog').hide();");
-            updateData1();
+            getResultados();
         }
             
     }
 
     private void updateData2() {
-        resultadosData = ResultadosDao.getResultados(sessionBean.getSelectedEmpresa(), ejercicio, cuentaSup);
-        resultadosTotalData = ResultadosDao.getTotalesResultados(sessionBean.getSelectedEmpresa(), ejercicio, cuentaSup);
+        resultadosData = resultadosService.getResultados(this.selectedEmpresa, ejercicio, cuentaSup);
+        System.out.println("update 2");
+        for (ResultadosDTO resultadosDTO : resultadosData) {
+            System.out.println(resultadosDTO.getNombre());
+        }
+        resultadosTotalData = resultadosService.getResultadosTotales(this.selectedEmpresa, ejercicio, cuentaSup);
     }
 
     public void detalleListener(String elNombre, String laCuenta) {
@@ -134,7 +143,7 @@ public class ShowResultadosBean implements Serializable {
 
     public void resumenListener() {
         resumen = true;
-        updateData1();
+        getResultados();
     }
 
     // Grafica Utilidad o Pérdida
@@ -151,10 +160,10 @@ public class ShowResultadosBean implements Serializable {
     // Grafica Total Ingresos Egresos
     public void chart3Listener(String tipo) {
         calcTotalResultadosChart(tipo, new String[]{"Mensual", "Acumulado"});
-        promedioChart = String.format("$ %(,.2f", sumaMes / ((resultadosTotalData.get(0).length - 1) / 2));
+        promedioChart = String.format("$ %(,.2f", sumaMes / resultadosTotalData.get(0).getResultadosAcreedora().size());
 
         if (resumen) {
-            tituloChart = tipo.equals("H RESULTADOS AC") ? "Ingresos" : "Egresos";
+            tituloChart = tipo.equals("H RESULTADOS ACREEDORA") ? "Ingresos" : "Egresos";
         } else {
             tituloChart = cuentaNom;
         }
@@ -162,11 +171,11 @@ public class ShowResultadosBean implements Serializable {
 
     // Grafica Ingresos VS Egresos
     public void chart4Listener() {
-        calcTotalResultadosChart("H RESULTADOS AC", new String[]{"Ingreso", "Ingresos"});
+        calcTotalResultadosChart("H RESULTADOS ACREEDORA", new String[]{"Ingreso", "Ingresos"});
         chartSerieIngresoMes = chartSerieMensuales;
         chartSerieIngresoAcu = chartSerieAcumulado;
         sumaIngresoMes = sumaMes;
-        calcTotalResultadosChart("G RESULTADOS DE", new String[]{"Egreso", "Egresos"});
+        calcTotalResultadosChart("G RESULTADOS DEUDORA", new String[]{"Egreso", "Egresos"});
         chartSerieEgresoMes = chartSerieMensuales;
         chartSerieEgresoAcu = chartSerieAcumulado;
         sumEgresoMes = sumaMes;
@@ -181,33 +190,38 @@ public class ShowResultadosBean implements Serializable {
         chartSerieAcumulado = new TreeMap<>();
         sumaMes = 0.0;
 
-        Object[] resultados = new Object[resultadosData.get(0).length];
-        for (Object[] obj : resultadosData) {
-            if (((String) obj[0]).equals(cuenta)) {
+        ResultadosDTO resultados = new ResultadosDTO();
+        for (ResultadosDTO obj : resultadosData) {
+            if (obj.getCuenta().equals(cuenta)) {
                 resultados = obj;
                 break;
             }
         }
 
-        tituloChart = (String) resultados[2];
+        tituloChart = resultados.getNombre();
 
         String titMensual = "Mensual";
         String titAcumulado = "Acumulada";
-        for (int k = 0; k < (resultados.length - 3) / 2; k++) {
+        for (int k = 0; k < resultados.getResultadosAc().size(); k++) {
             String mes = titMeses[k];
-            double elMes = (double) resultados[k * 2 + 3];
-            double elAcu = (double) resultados[k * 2 + 4];
+            double elMes = (double) resultados.getResultadosAc().get(k);
+            double elAcu = (double) resultados.getResultadosFin().get(k);
             sumaMes += elMes;
+            
+            System.out.println("Mes: " + mes);
 
             if (chartSerieMensuales.containsKey(titMensual)) {
+                System.out.println("Entro en suma mensual: ");
                 ChartSeries chartSeries = chartSerieMensuales.get(titMensual);
                 Map<Object, Number> data = chartSeries.getData();
                 if (data.containsKey(mes)) {
                     double impMes = (double) data.get(mes) + elMes;
                     data.put(mes, impMes);
                     chartSeries.setData(data);
+                    System.out.println("Suma para este mes: " + impMes);
                 } else {
                     chartSeries.set(mes, elMes);
+                    System.out.println("Suma para este mes: " + elMes);
                 }
                 chartSerieMensuales.put(titMensual, chartSeries);
             } else {
@@ -235,7 +249,7 @@ public class ShowResultadosBean implements Serializable {
                 chartSerieAcumulado.put(titAcumulado, chartSeries);
             }
         }
-        sumaMes /= ((resultados.length - 3) / 2);
+        sumaMes /= resultados.getResultadosAc().size();
         promedioChart = String.format("$ %(,.2f", sumaMes);
     }
 
@@ -244,18 +258,18 @@ public class ShowResultadosBean implements Serializable {
         chartSerieAcumulado = new TreeMap<>();
         sumaMes = 0.0;
 
-        Object[] resultados = new Object[resultadosTotalData.get(0).length];
-        for (Object[] obj : resultadosTotalData) {
-            if (((String) obj[0]).equals(tipo)) {
+        ResultadosTotalesDTO resultados = new ResultadosTotalesDTO();
+        for (ResultadosTotalesDTO obj : resultadosTotalData) {
+            if (obj.getTipo().equals(tipo)) {
                 resultados = obj;
                 break;
             }
         }
 
-        for (int k = 0; k < (resultados.length - 1) / 2; k++) {
+        for (int k = 0; k < resultados.getResultadosAcreedora().size(); k++) {
             String mes = titMeses[k];
-            double elMes = (double) resultados[k * 2 + 1];
-            double elAcu = (double) resultados[k * 2 + 2];
+            double elMes = resultados.getResultadosAcreedora().get(k);;
+            double elAcu = resultados.getResultadosDeudora().get(k);
             sumaMes += elMes;
 
             if (chartSerieMensuales.containsKey(series[0])) {
@@ -304,10 +318,10 @@ public class ShowResultadosBean implements Serializable {
 
         String titMensual = "Mensual";
         String titAcumulado = "Acumulada";
-        for (Object[] obj : utilidadesData) {
-            String mes = titMeses[new DateTime((Date) obj[0]).getMonthOfYear() - 1];
-            double elMes = (double) obj[1];
-            double elAcu = (double) obj[2];
+        for (UtilidadPerdidaDTO obj : utilidadesData) {
+            String mes = titMeses[new DateTime(obj.getFecha()).getMonthOfYear() - 1];
+            double elMes = obj.getCargosAbonos();
+            double elAcu = obj.getSaldofin();
             sumaMes += elMes;
 
             if (chartSerieMensuales.containsKey(titMensual)) {
@@ -348,8 +362,8 @@ public class ShowResultadosBean implements Serializable {
         }
     }
 
-    public CartesianChartModel getChart1() {
-        CartesianChartModel chartModel = new CartesianChartModel();
+    public BarChartModel getChart1() {
+        BarChartModel chartModel = new BarChartModel();
 
         for (Map.Entry entry : chartSerieMensuales.entrySet()) {
             chartModel.addSeries((ChartSeries) entry.getValue());
@@ -359,20 +373,39 @@ public class ShowResultadosBean implements Serializable {
             chartModel.addSeries((ChartSeries) entry.getValue());
         }
 
+        chartModel.setLegendPosition("nw");
+        chartModel.setTitle("Ejercicio " + ejercicio);
+        Axis xAxis = chartModel.getAxis(AxisType.X);
+        xAxis.setLabel("Promedio: " + this.promedioChart);
+        
         return chartModel;
     }
 
     public CartesianChartModel getChart2() {
-        CartesianChartModel chartModel = new CartesianChartModel();
+        LineChartModel chartModel = new LineChartModel();
+        LineChartSeries a = new LineChartSeries();
+        LineChartSeries b = new LineChartSeries();
 
         for (Map.Entry entry : chartSerieAcumulado.entrySet()) {
-            chartModel.addSeries((ChartSeries) entry.getValue());
+            a.setData(((ChartSeries)entry.getValue()).getData());
         }
 
+        
+        
         for (Map.Entry entry : chartSerieMensuales.entrySet()) {
-            chartModel.addSeries((ChartSeries) entry.getValue());
+            b.setData(((ChartSeries)entry.getValue()).getData());
         }
+        
+        chartModel.addSeries(a);
+        chartModel.addSeries(b);
 
+        chartModel.setLegendPosition("ne");
+        chartModel.setTitle("Ejercicio " + ejercicio);
+        Axis xAxis = chartModel.getAxis(AxisType.X);
+        xAxis.setLabel("Promedio: " + this.promedioChart);
+        chartModel.setStacked(true);
+        chartModel.setShowPointLabels(true);
+        
         return chartModel;
     }
 
@@ -404,7 +437,7 @@ public class ShowResultadosBean implements Serializable {
         return chartModel;
     }
 
-    public List<Object[]> getResultadosData() {
+    public List<ResultadosDTO> getResultadosData() {
         return resultadosData;
     }
 
@@ -420,7 +453,7 @@ public class ShowResultadosBean implements Serializable {
         this.ejercicio = ejercicio;
     }
 
-    public List<Object[]> getUtilidadesData() {
+    public List<UtilidadPerdidaDTO> getUtilidadesData() {
         return utilidadesData;
     }
 
@@ -432,7 +465,7 @@ public class ShowResultadosBean implements Serializable {
         return tituloChart;
     }
 
-    public List<Object[]> getResultadosTotalData() {
+    public List<ResultadosTotalesDTO> getResultadosTotalData() {
         return resultadosTotalData;
     }
 
