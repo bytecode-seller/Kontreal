@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package kontreal.bean;
 
 import java.io.Serializable;
@@ -95,7 +90,10 @@ public class ShowResultadosBean implements Serializable {
         resultadosTotalData = resultadosService.getResultadosTotales(this.selectedEmpresa, ejercicio);
         utilidadesData = resultadosService.getUtilidadPerdida(this.selectedEmpresa, ejercicio);
 
-        meses = new Date[resultadosData.get(0).getResultadosAc().size()];
+        if(!resultadosData.isEmpty())
+            meses = new Date[resultadosData.get(0).getResultadosAc().size()];
+        else
+            meses =  new Date[0];
         for (int k = 0; k < meses.length; k++) {
             meses[k] = new DateTime().withMonthOfYear(k + 1).dayOfMonth().withMinimumValue().toDate();
         }
@@ -382,31 +380,53 @@ public class ShowResultadosBean implements Serializable {
     }
 
     public CartesianChartModel getChart2() {
-        LineChartModel chartModel = new LineChartModel();
-        LineChartSeries a = new LineChartSeries();
-        LineChartSeries b = new LineChartSeries();
+//        LineChartModel chartModel = new LineChartModel();
+//
+//        for (Map.Entry entry : chartSerieAcumulado.entrySet()) {
+//            chartModel.addSeries((ChartSeries) entry.getValue());
+//        }
+//
+//        for (Map.Entry entry : chartSerieMensuales.entrySet()) {
+//            chartModel.addSeries((ChartSeries) entry.getValue());
+//        }
+//
+//        chartModel.setLegendPosition("ne");
+//        chartModel.setTitle("Ejercicio " + ejercicio);
+//        Axis xAxis = chartModel.getAxis(AxisType.X);
+//        xAxis.setLabel("Promedio: " + this.promedioChart);
+//        chartModel.setStacked(true);
+//        chartModel.setShowPointLabels(true);
 
-        for (Map.Entry entry : chartSerieAcumulado.entrySet()) {
-            a.setData(((ChartSeries)entry.getValue()).getData());
-        }
-
+        LineChartModel model = new LineChartModel();
+        LineChartSeries boys = new LineChartSeries();
+        boys.setFill(true);
+        boys.setLabel("Boys");
+        boys.set("2004", 120);
+        boys.set("2005", 100);
+        boys.set("2006", 44);
+        boys.set("2007", 150);
+        boys.set("2008", 25);
+        LineChartSeries girls = new LineChartSeries();
+        girls.setFill(true);
+        girls.setLabel("Girls");
+        girls.set("2004", 52);
+        girls.set("2005", 60);
+        girls.set("2006", 110);
+        girls.set("2007", 90);
+        girls.set("2008", 120);
+        model.addSeries(boys);
+        model.addSeries(girls);
+        model.setTitle("Area Chart");
+        model.setLegendPosition("ne");
+        model.setStacked(true);
+        model.setShowPointLabels(true);
+        model.getAxis(AxisType.X).setLabel("Years");
+        Axis yAxis = model.getAxis(AxisType.Y);
+        yAxis.setLabel("Births");
+        yAxis.setMin(0);
+        yAxis.setMax(300);
         
-        
-        for (Map.Entry entry : chartSerieMensuales.entrySet()) {
-            b.setData(((ChartSeries)entry.getValue()).getData());
-        }
-        
-        chartModel.addSeries(a);
-        chartModel.addSeries(b);
-
-        chartModel.setLegendPosition("ne");
-        chartModel.setTitle("Ejercicio " + ejercicio);
-        Axis xAxis = chartModel.getAxis(AxisType.X);
-        xAxis.setLabel("Promedio: " + this.promedioChart);
-        chartModel.setStacked(true);
-        chartModel.setShowPointLabels(true);
-        
-        return chartModel;
+        return model;
     }
 
     public CartesianChartModel getChart3() {

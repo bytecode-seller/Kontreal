@@ -67,6 +67,18 @@ public class CuentaDao {
         
         return cuentas;
     }
+    
+    public static List<Cuenta> searchAllByName(String nombreEmpresa) {
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+
+        List<Cuenta> cuentas = new ArrayList<>();
+        if (nombreEmpresa != null) {
+            cuentas = session.createQuery("from Cuenta c where c.empresa.nombre = :emp order by c.numeroCuenta").setString("emp", nombreEmpresa).list();
+        }
+        
+        return cuentas;
+    }
 
     public static List<Cuenta> searchDistinct(Empresa empresa) {
         HibernateUtil.beginTransaction();

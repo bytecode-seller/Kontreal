@@ -42,7 +42,7 @@ public class ResultadosServiceImpl implements ResultadosService {
          
         Map<String, ResultadosDTO> res = new LinkedHashMap<>();
         
-        System.out.println("Primera cuenta: " + resultados.get(0).getNombre());
+        // System.out.println("Primera cuenta: " + resultados.get(0).getNombre());
         
         int maxIndices = new DateTime(maxFecha).getMonthOfYear();
         for (ResultadosConsultaDTO datarow : resultados) {

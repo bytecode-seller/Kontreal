@@ -63,12 +63,28 @@ public class BalanzaDao {
 
         if (empresa != null) {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where e = :emp and c = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
-                    .setEntity("emp", empresa).setEntity("cue", cuenta).setInteger("eje", ejercicio).list();
+                    + "where e.nombre = :emp and c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
+                    .setString("emp", empresa.getNombre()).setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list();
         } else {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where c = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
-                    .setEntity("cue", cuenta).setInteger("eje", ejercicio).list();
+                    + "where c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
+                    .setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list();
+        }
+    }
+    
+    public static List<Balanza> searchSaldos(Empresa empresa, int ejercicio) {
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+
+        if (empresa != null) {
+            System.out.println("Entro en saldo empresa");
+            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+                    + "where e.nombre = :emp and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
+                    .setString("emp", empresa.getNombre()).setInteger("eje", ejercicio).list();
+        } else {
+            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+                    + "where YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
+                    .setInteger("eje", ejercicio).list();
         }
     }
 

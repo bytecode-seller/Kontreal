@@ -1,16 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package kontreal.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -20,6 +17,7 @@ import kontreal.dao.EmpresaDao;
 import kontreal.entities.Balanza;
 import kontreal.entities.Cuenta;
 import kontreal.entities.Empresa;
+import kontreal.services.SaldosService;
 import org.joda.time.DateTime;
 
 /**
@@ -37,8 +35,14 @@ public class ShowSaldosBean implements Serializable {
     private Cuenta cuenta;
     private int ejercicio;
     private final String[] meses;
+    private List<Empresa> empresas;
+    private List<Cuenta> cuentas;
+    private Empresa selectedEmpresa;
+    boolean changeEmpresa;
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
+    @EJB
+    private SaldosService saldosService;
 
     public void setSessionBean(SessionBean sessionBean) {
         this.sessionBean = sessionBean;
@@ -57,35 +61,76 @@ public class ShowSaldosBean implements Serializable {
 
     @PostConstruct
     private void initData() {
-        cuentasConverter();
+        System.out.println("Init data");
+        this.empresas = new ArrayList<>();
+        this.cuentas = new ArrayList<>();
+        this.saldosData = new ArrayList<>();
+        this.empresas.addAll( EmpresaDao.searchAll());
+        this.cuentas.addAll(CuentaDao.findAll());
     }
 
     private void updateData() {
-        saldosData = BalanzaDao.searchSaldos(sessionBean.getSelectedEmpresa(), cuenta, ejercicio);
+//        if(cuenta != null){
+//            saldosData.clear();
+//            List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, cuenta, ejercicio);
+//            saldosData.addAll(lb);
+//        }else{
+//            System.out.println("Entro en else: ");
+//            saldosData.clear();
+//            List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, ejercicio);
+//            saldosData.addAll(lb);
+//            
+//            
+//        }
+        
+        if(this.selectedEmpresa != null){
+            cuentas.addAll(CuentaDao.searchAll(selectedEmpresa));
+            saldosData.clear();
+            List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, ejercicio);
+            saldosData.addAll(lb);
+        }
+        
+        if(this.selectedEmpresa != null && this.cuenta != null){
+            saldosData.clear();
+            List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, cuenta, ejercicio);
+            saldosData.addAll(lb);
+        }
+        if(this.cuenta != null){
+           saldosData.clear();
+           List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, cuenta, ejercicio);
+           saldosData.addAll(lb);
+        }
+        if(!saldosData.isEmpty())
+                System.out.println("Primer saldo: " + saldosData.get(0).getCargos());
+        
+    }
+    
+    public void listenerChangeEmpresa(){
+        this.cuentas.clear();
     }
 
     public void listenerParams() {
-        if(sessionBean.getSelectedEmpresa() != null)
-            System.out.println(sessionBean.getSelectedEmpresa());
+        if(this.selectedEmpresa != null)
+            System.out.println("Nombre empresa seleccionada saldos: " + getSelectedEmpresa().getNombre());
         //System.out.println("-------------- Cuenta: " + cuenta.getCuenta());
         //System.out.println("-------------- Ejercicio: " + ejercicio);
         updateData();
     }
-
-    private void cuentasConverter() {
-        cuentasConverter = new TreeMap<>();
-        cuentasConverter.put("- Selecciona -", null);
-
-        if(sessionBean.getSelectedEmpresa() == null){
-            for (Cuenta cue : CuentaDao.findAll()) {
-                cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
-            }
-        }
-        else
-        for (Cuenta cue : CuentaDao.searchAll(sessionBean.getSelectedEmpresa())) {
-            cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
-        }
-    }
+//
+//    private void cuentasConverter() {
+//        cuentasConverter = new TreeMap<>();
+//        cuentasConverter.put("- Selecciona -", null);
+//
+//        if(this.selectedEmpresa == null){
+//            for (Cuenta cue : CuentaDao.findAll()) {
+//                cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
+//            }
+//        }
+//        else
+//        for (Cuenta cue : CuentaDao.searchAll(this.selectedEmpresa)) {
+//            cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
+//        }
+//    }
 
     public String convertMonth(Date fecha) {
         DateTime date = new DateTime(fecha);
@@ -128,7 +173,28 @@ public class ShowSaldosBean implements Serializable {
         this.cuenta = cuenta;
     }
 
-    public List<kontreal.entities.Empresa> getEmpresas(){
-        return EmpresaDao.searchAll();
+    public List<Empresa> getEmpresas(){
+        return this.empresas;
     }
+    
+    public void setEmpresas( List<Empresa> empresas){
+        this.empresas = empresas;
+    }
+
+    public Empresa getSelectedEmpresa() {
+        return selectedEmpresa;
+    }
+
+    public void setSelectedEmpresa(Empresa selectedEmpresa) {
+        this.selectedEmpresa = selectedEmpresa;
+    }
+
+    public List<Cuenta> getCuentas() {
+        return cuentas;
+    }
+
+    public void setCuentas(List<Cuenta> cuentas) {
+        this.cuentas = cuentas;
+    }
+    
 }

@@ -44,29 +44,37 @@
 
                 <p:layoutUnit position="center" header="RELACIÓN DE SALDOS">
                     <h:form id="formTable">
-                        <p:dataTable id="saldos" value="#{showSaldosBean.saldosData}" filteredValue="#{showSaldosBean.saldosFilter}"
+                        <p:dataTable id="tableSaldos" value="#{showSaldosBean.saldosData}" filteredValue="#{showSaldosBean.saldosFilter}"
                                      var="saldos" widgetVar="widgetTable" emptyMessage="No existen registros con esta condición." >
                             <f:facet name="header">
                                 <p:outputPanel>
                                     <p:toolbar id="toolbar">
                                         <p:toolbarGroup align="left">
                                             <h:outputText value="Empresa:" />
-                                            <p:selectOneMenu value="#{sessionBean.empresa}" style="width: 200px;" >
-                                                <f:selectItem itemLabel="Select One" itemValue="" />
-                                                <f:selectItems value="#{showSaldosBean.empresas}" />
-                                                <p:ajax event="change" listener="#{sessionBean.empresaListener()}" update="saldos"/>
+                                            <p:selectOneMenu id="selectOfEmpresa" value="#{showSaldosBean.selectedEmpresa}" converter="selectOneMenuConverter" var="emp">
+                                                <f:selectItem itemLabel="Seleccionar Empresa" itemValue="" />
+                                                <f:selectItems value="#{showSaldosBean.empresas}" var="empresa" itemLabel="#{empresa.nombre}" itemValue="#{empresa}"/>
+                                                <p:column>#{emp.nombre}</p:column>
+                                                <p:ajax event="valueChange" listener="#{showSaldosBean.listenerParams()}" update="@form"
+                                                    process="@(:not(button))" onstart="PF('bui').show();" oncomplete="PF('bui').hide();PF('widgetTable').filter();"/>
+                                                <p:ajax event="change" listener="#{showSaldosBean.listenerParams()}" update="@form"
+                                                    process="@(:not(button))" onstart="PF('bui').show();" oncomplete="PF('bui').hide();PF('widgetTable').filter();"/>
+                                                <f:valueChangeListener binding="#{showSaldosBean.listenerChangeEmpresa()}"/> 
                                             </p:selectOneMenu>
                                             <h:outputText value="Cuenta Contable:" />
-                                            <p:selectOneMenu value="#{showSaldosBean.cuenta}" style="width: 200px;" converter="converterCuentaSaldos">
-                                                <f:selectItems value="#{showSaldosBean.cuentasConverter}" />
-                                                <p:ajax event="change" listener="#{showSaldosBean.listenerParams()}" update="saldos"/>
+                                            <p:selectOneMenu value="#{showSaldosBean.cuenta}" var="cue" style="width: 200px;" converter="selectOneMenuConverter">
+                                                <f:selectItem itemLabel="Seleccionar Cuenta" itemValue="" />
+                                                <f:selectItems value="#{showSaldosBean.cuentas}" var="c" itemLabel="#{c.numeroCuenta} #{c.nombre}" itemValue="#{c}"/>
+                                                <p:column>#{cue.numeroCuenta} - #{cue.nombre}</p:column>
+                                                <p:ajax event="valueChange" listener="#{showSaldosBean.listenerParams()}" update="@form"
+                                                    process="@(:not(button))" onstart="PF('bui').show();" oncomplete="PF('bui').hide();PF('widgetTable').filter();"/>
                                             </p:selectOneMenu>
                                             <p:spacer height="0" width="5"/>
                                             <h:outputText value="Del Ejercicio"/>
                                             <p:spacer height="0" width="5"/>
                                             <p:selectOneMenu value="#{showSaldosBean.ejercicio}" style="width: 75px;">
                                                 <f:selectItems value="#{showSaldosBean.ejercicios}" />
-                                                <p:ajax event="change" listener="#{showSaldosBean.listenerParams()}" oncomplete="PF('widgetTable').filter();"/>
+                                                <p:ajax event="change" listener="#{showSaldosBean.listenerParams()}" oncomplete="PF('widgetTable').filter();PF('bui').hide();" onstart="PF('bui').show();"/>
                                             </p:selectOneMenu>
                                         </p:toolbarGroup>
                                         <p:toolbarGroup align="right">
@@ -83,7 +91,7 @@
                             </f:facet>
 
                             <p:column headerText="Empresa" width="12%" sortBy="#{saldos.cuenta.empresa.nombre}" filterBy="#{saldos.cuenta.empresa.nombre}" 
-                                      filterMatchMode="startsWith" filterStyle="width: 60px" rendered="#{sessionBean.selectedEmpresa eq null}">
+                                      filterMatchMode="startsWith" filterStyle="width: 60px" rendered="#{showSaldosBean.selectedEmpresa eq null}">
                                 <h:outputText value="#{saldos.cuenta.empresa.nombre}"/>
                             </p:column>
                             <p:column headerText="Nivel" width="6%" style="text-align: center;">
@@ -121,6 +129,9 @@
                                 <h:outputText value="#{showSaldosBean.convertMonth(saldos.fecha)}"/>
                             </p:column>
                         </p:dataTable>
+                        <p:blockUI id="loadingDeTabla" widgetVar="bui" block="tableSaldos" blocked="false" >
+                            <h:graphicImage url="/resources/images/loading.gif"/>
+                        </p:blockUI>
                     </h:form>
                 </p:layoutUnit>
 
