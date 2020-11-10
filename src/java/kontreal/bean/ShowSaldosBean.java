@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -70,18 +69,6 @@ public class ShowSaldosBean implements Serializable {
     }
 
     private void updateData() {
-//        if(cuenta != null){
-//            saldosData.clear();
-//            List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, cuenta, ejercicio);
-//            saldosData.addAll(lb);
-//        }else{
-//            System.out.println("Entro en else: ");
-//            saldosData.clear();
-//            List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, ejercicio);
-//            saldosData.addAll(lb);
-//            
-//            
-//        }
         
         if(this.selectedEmpresa != null){
             cuentas.addAll(CuentaDao.searchAll(selectedEmpresa));
@@ -110,27 +97,8 @@ public class ShowSaldosBean implements Serializable {
     }
 
     public void listenerParams() {
-        if(this.selectedEmpresa != null)
-            System.out.println("Nombre empresa seleccionada saldos: " + getSelectedEmpresa().getNombre());
-        //System.out.println("-------------- Cuenta: " + cuenta.getCuenta());
-        //System.out.println("-------------- Ejercicio: " + ejercicio);
         updateData();
     }
-//
-//    private void cuentasConverter() {
-//        cuentasConverter = new TreeMap<>();
-//        cuentasConverter.put("- Selecciona -", null);
-//
-//        if(this.selectedEmpresa == null){
-//            for (Cuenta cue : CuentaDao.findAll()) {
-//                cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
-//            }
-//        }
-//        else
-//        for (Cuenta cue : CuentaDao.searchAll(this.selectedEmpresa)) {
-//            cuentasConverter.put(cue.getNumeroCuenta() + " - " + cue.getNombre(), cue);
-//        }
-//    }
 
     public String convertMonth(Date fecha) {
         DateTime date = new DateTime(fecha);
