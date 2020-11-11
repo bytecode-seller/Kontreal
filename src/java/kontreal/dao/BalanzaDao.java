@@ -63,11 +63,11 @@ public class BalanzaDao {
 
         if (empresa != null) {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where e.nombre = :emp and c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
+                    + "where e.nombre = :emp and c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
                     .setString("emp", empresa.getNombre()).setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list();
         } else {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
+                    + "where c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
                     .setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list();
         }
     }
@@ -79,11 +79,11 @@ public class BalanzaDao {
         if (empresa != null) {
             System.out.println("Entro en saldo empresa");
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where e.nombre = :emp and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
+                    + "where e.nombre = :emp and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
                     .setString("emp", empresa.getNombre()).setInteger("eje", ejercicio).list();
         } else {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
-                    + "where YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta")
+                    + "where YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
                     .setInteger("eje", ejercicio).list();
         }
     }
