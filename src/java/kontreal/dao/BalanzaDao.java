@@ -8,6 +8,7 @@ package kontreal.dao;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 import kontreal.entities.Balanza;
 import kontreal.entities.Cuenta;
 import kontreal.entities.Empresa;
@@ -156,10 +157,12 @@ public class BalanzaDao {
     
     public static void deleteByDate(Date date){
         HibernateUtil.beginTransaction();
-        Session session = HibernateUtil.getSession();
-        
-        Balanza b = new Balanza();
-        b.setFecha(date);
-        session.delete(b);
+        final Session session = HibernateUtil.getSession();
+        session.createQuery("FROM Balanza b WHERE b.fecha = :fecha").setDate("fecha", date).list().forEach(new Consumer() {
+            @Override
+            public void accept(Object t) {
+                session.delete((Balanza)t);
+            }
+        });
     }
 }
