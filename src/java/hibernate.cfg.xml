@@ -7,17 +7,16 @@
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/contabilidad?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">root</property>
-    <property name="hibernate.connection.password">root</property>
-    <!--<property name="hibernate.connection.password">SGGX6X7Vf4j3</property>-->
+    <property name="hibernate.connection.password">SGGX6X7Vf4j3</property>
     <property name="hibernate.show_sql">false</property>
     <property name="hibernate.current_session_context_class">thread</property>
     <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
     <property name="hibernate.query.factory_class">org.hibernate.hql.internal.classic.ClassicQueryTranslatorFactory</property>
-<!--    <property name="hibernate.c3p0.min_size">5</property>
+    <property name="hibernate.c3p0.min_size">5</property>
     <property name="hibernate.c3p0.max_size">20</property>
     <property name="hibernate.c3p0.timeout">300</property>
     <property name="hibernate.c3p0.max_statements">50</property>
-    <property name="hibernate.c3p0.idle_test_period">3000</property>-->
+    <property name="hibernate.c3p0.idle_test_period">3000</property>
     <mapping resource="kontreal/entities/Lcuenta.hbm.xml"/>
     <mapping resource="kontreal/entities/Empresa.hbm.xml"/>
     <mapping resource="kontreal/entities/Gasto.hbm.xml"/>
