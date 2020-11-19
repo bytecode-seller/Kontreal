@@ -44,8 +44,11 @@
 
                 <p:layoutUnit position="center" header="RELACIÓN DE SALDOS">
                     <h:form id="formTable">
-                        <p:dataTable id="tableSaldos" value="#{showSaldosBean.saldosData}" filteredValue="#{showSaldosBean.saldosFilter}"
-                                     var="saldos" widgetVar="widgetTable" emptyMessage="No existen registros con esta condición." >
+                        <p:dataTable id="tableSaldos" value="#{showSaldosBean.saldosBalanza}" filteredValue="#{showSaldosBean.saldosFilter}"
+                                     var="saldos" widgetVar="widgetTable" emptyMessage="No existen registros con esta condición."
+                                     paginator="true" paginatorPosition="top" rows="50" lazy="true" rowsPerPageTemplate="50,100,200,400"
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     >
                             <f:facet name="header">
                                 <p:outputPanel>
                                     <p:toolbar id="toolbar">
@@ -66,7 +69,7 @@
                                                 <f:selectItem itemLabel="Seleccionar Cuenta" itemValue="" />
                                                 <f:selectItems value="#{showSaldosBean.cuentas}" var="c" itemLabel="#{c.numeroCuenta} #{c.nombre}" itemValue="#{c}"/>
                                                 <p:column>#{cue.numeroCuenta} - #{cue.nombre}</p:column>
-                                                <p:ajax event="valueChange" listener="#{showSaldosBean.listenerParams()}" update="@form"
+                                                <p:ajax event="valueChange" listener="#{showSaldosBean.searchByCuenta()}" update="@form"
                                                     process="@(:not(button))" onstart="PF('bui').show();" oncomplete="PF('bui').hide();PF('widgetTable').filter();"/>
                                             </p:selectOneMenu>
                                             <p:spacer height="0" width="5"/>

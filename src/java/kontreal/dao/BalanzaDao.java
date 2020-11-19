@@ -58,22 +58,45 @@ public class BalanzaDao {
         return query.list();
     }
 
-    public static List<Balanza> searchSaldos(Empresa empresa, Cuenta cuenta, int ejercicio) {
+    public static List<Balanza> searchSaldos(Empresa empresa, Cuenta cuenta, int ejercicio, int primero, int pageSize) {
         HibernateUtil.beginTransaction();
         Session session = HibernateUtil.getSession();
 
         if (empresa != null) {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where e.nombre = :emp and c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
-                    .setString("emp", empresa.getNombre()).setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list();
+                    .setString("emp", empresa.getNombre())
+                    .setString("cue", cuenta.getNumeroCuenta())
+                    .setInteger("eje", ejercicio)
+                    .setFirstResult(primero)
+                    .setMaxResults(pageSize)
+                    .list();
         } else {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
-                    .setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list();
+                    .setString("cue", cuenta.getNumeroCuenta())
+                    .setInteger("eje", ejercicio)
+                    .setFirstResult(primero)
+                    .setMaxResults(pageSize)
+                    .list();
+        }
+    }
+    public static int numSaldosEmpresaCuenta(Empresa empresa, Cuenta cuenta, int ejercicio) {
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+
+        if (empresa != null) {
+            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+                    + "where e.nombre = :emp and c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
+                    .setString("emp", empresa.getNombre()).setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list().size();
+        } else {
+            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+                    + "where c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
+                    .setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list().size();
         }
     }
     
-    public static List<Balanza> searchSaldos(Empresa empresa, int ejercicio) {
+    public static List<Balanza> searchSaldos(Empresa empresa, int ejercicio, int first, int pageSize) {
         HibernateUtil.beginTransaction();
         Session session = HibernateUtil.getSession();
 
@@ -81,11 +104,34 @@ public class BalanzaDao {
             System.out.println("Entro en saldo empresa");
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where e.nombre = :emp and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
-                    .setString("emp", empresa.getNombre()).setInteger("eje", ejercicio).list();
+                    .setString("emp", empresa.getNombre())
+                    .setInteger("eje", ejercicio)
+                    .setFirstResult(first)
+                    .setMaxResults(pageSize)
+                    .list();
         } else {
             return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
-                    .setInteger("eje", ejercicio).list();
+                    .setInteger("eje", ejercicio)
+                    .setFirstResult(first)
+                    .setMaxResults(pageSize)
+                    .list();
+        }
+    }
+    
+    public static int searchNumSaldos(Empresa empresa, int ejercicio) {
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+
+        if (empresa != null) {
+            System.out.println("Entro en saldo empresa");
+            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+                    + "where e.nombre = :emp and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
+                    .setString("emp", empresa.getNombre()).setInteger("eje", ejercicio).list().size();
+        } else {
+            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+                    + "where YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
+                    .setInteger("eje", ejercicio).list().size();
         }
     }
 

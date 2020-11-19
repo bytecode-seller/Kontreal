@@ -18,6 +18,8 @@ import kontreal.entities.Cuenta;
 import kontreal.entities.Empresa;
 import kontreal.services.SaldosService;
 import org.joda.time.DateTime;
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortOrder;
 
 /**
  *
@@ -38,6 +40,7 @@ public class ShowSaldosBean implements Serializable {
     private List<Cuenta> cuentas;
     private Empresa selectedEmpresa;
     boolean changeEmpresa;
+    private LazyDataModel<Balanza> saldosBalanza;
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
     @EJB
@@ -66,30 +69,40 @@ public class ShowSaldosBean implements Serializable {
         this.saldosData = new ArrayList<>();
         this.empresas.addAll( EmpresaDao.searchAll());
         this.cuentas.addAll(CuentaDao.findAll());
+        
     }
 
     private void updateData() {
+        int nSaldos = saldosService.numSaldosEmpresa(selectedEmpresa, ejercicio);
         
         if(this.selectedEmpresa != null){
             cuentas.addAll(CuentaDao.searchAll(selectedEmpresa));
             saldosData.clear();
-            List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, ejercicio);
-            saldosData.addAll(lb);
+            
+            saldosBalanza = new LazyDataModel<Balanza>(){
+                @Override
+                public List<Balanza> load(int first ,int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters){
+                    return saldosService.getSaldos(selectedEmpresa, ejercicio, first, pageSize);
+                }
+            };
+            saldosBalanza.setRowCount(nSaldos);
         }
         
-        if(this.selectedEmpresa != null && this.cuenta != null){
-            saldosData.clear();
-            List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, cuenta, ejercicio);
-            saldosData.addAll(lb);
+    }
+    
+    public void searchByCuenta(){
+        if(this.cuenta == null){
+            this.listenerParams();
+        }else {
+            int nSaldos = saldosService.numSaldosEmpresaCuenta(selectedEmpresa, cuenta,ejercicio);
+            saldosBalanza = new LazyDataModel<Balanza>(){
+                @Override
+                public List<Balanza> load(int first ,int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters){
+                    return saldosService.getSaldos(selectedEmpresa,cuenta, ejercicio, first, pageSize);
+                }
+            };
+            saldosBalanza.setRowCount(nSaldos);
         }
-        if(this.cuenta != null){
-           saldosData.clear();
-           List<Balanza> lb = saldosService.getSaldos(selectedEmpresa, cuenta, ejercicio);
-           saldosData.addAll(lb);
-        }
-        if(!saldosData.isEmpty())
-                System.out.println("Primer saldo: " + saldosData.get(0).getCargos());
-        
     }
     
     public void listenerChangeEmpresa(){
@@ -163,6 +176,14 @@ public class ShowSaldosBean implements Serializable {
 
     public void setCuentas(List<Cuenta> cuentas) {
         this.cuentas = cuentas;
+    }
+
+    public LazyDataModel<Balanza> getSaldosBalanza() {
+        return saldosBalanza;
+    }
+
+    public void setSaldosBalanza(LazyDataModel<Balanza> saldosBalanza) {
+        this.saldosBalanza = saldosBalanza;
     }
     
 }

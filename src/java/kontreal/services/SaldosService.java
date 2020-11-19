@@ -12,6 +12,8 @@ import kontreal.entities.Empresa;
  */
 @Remote
 public interface SaldosService {
-    public List<Balanza> getSaldos(Empresa empresa,int ejercicio);
-    public List<Balanza> getSaldos(Empresa empresa, Cuenta cuenta, int ejercicio);
+    public List<Balanza> getSaldos(Empresa empresa,int ejercicio, int primero, int pageSize);
+    public List<Balanza> getSaldos(Empresa empresa, Cuenta cuenta, int ejercicio, int primero, int pageSize);
+    public int numSaldosEmpresa(Empresa empresa, int ejercicio);
+    public int numSaldosEmpresaCuenta(Empresa empresa,Cuenta cuenta, int ejercicio);
 }
