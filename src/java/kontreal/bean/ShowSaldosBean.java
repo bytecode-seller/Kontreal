@@ -6,10 +6,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
+import javax.enterprise.inject.New;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import kontreal.dao.BalanzaDao;
 import kontreal.dao.CuentaDao;
 import kontreal.dao.EmpresaDao;
@@ -17,6 +20,7 @@ import kontreal.entities.Balanza;
 import kontreal.entities.Cuenta;
 import kontreal.entities.Empresa;
 import kontreal.services.SaldosService;
+import kontreal.services.SaldosServiceImpl;
 import org.joda.time.DateTime;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
@@ -29,6 +33,7 @@ import org.primefaces.model.SortOrder;
 @ViewScoped
 public class ShowSaldosBean implements Serializable {
 
+    @Inject @New(value = ArrayList.class)
     private List<Balanza> saldosData;
     private List<Balanza> saldosFilter;
     private final List<Integer> ejercicios;
@@ -36,14 +41,16 @@ public class ShowSaldosBean implements Serializable {
     private Cuenta cuenta;
     private int ejercicio;
     private final String[] meses;
+    @Inject @New(value = ArrayList.class)
     private List<Empresa> empresas;
+    @Inject @New(value = ArrayList.class)
     private List<Cuenta> cuentas;
     private Empresa selectedEmpresa;
     boolean changeEmpresa;
     private LazyDataModel<Balanza> saldosBalanza;
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
-    @EJB
+    @Inject @New(SaldosServiceImpl.class)
     private SaldosService saldosService;
 
     public void setSessionBean(SessionBean sessionBean) {
@@ -64,9 +71,6 @@ public class ShowSaldosBean implements Serializable {
     @PostConstruct
     private void initData() {
         System.out.println("Init data");
-        this.empresas = new ArrayList<>();
-        this.cuentas = new ArrayList<>();
-        this.saldosData = new ArrayList<>();
         this.empresas.addAll( EmpresaDao.searchAll());
         this.cuentas.addAll(CuentaDao.findAll());
         
@@ -86,6 +90,9 @@ public class ShowSaldosBean implements Serializable {
                 }
             };
             saldosBalanza.setRowCount(nSaldos);
+        }else{
+            FacesMessage f = new FacesMessage(FacesMessage.SEVERITY_WARN, "Sin empresa", "Seleccione una empresa para mostrar datos");
+            FacesContext.getCurrentInstance().addMessage("dataTableSaldos", f);
         }
         
     }
@@ -103,6 +110,29 @@ public class ShowSaldosBean implements Serializable {
             };
             saldosBalanza.setRowCount(nSaldos);
         }
+    }
+    
+    public void subCuentas(String numeroCuenta){
+        
+        final String startsWith;
+        if(numeroCuenta.substring(4,4).equals("0000")){
+            startsWith = numeroCuenta.substring(0, 3);
+            System.out.println("Primera opcion");
+        }else{
+            startsWith = numeroCuenta.substring(0, 3);
+            System.out.println("Segunda opcion");
+        }
+        System.out.println("numero cuenta comienza con: " + startsWith);
+        
+        int nSaldos = saldosService.getNumSubCuentas(startsWith, selectedEmpresa.getNombre(), ejercicio);
+        saldosBalanza.setRowCount(nSaldos);
+        System.out.println("Numero de conincidencias: " + nSaldos);
+        saldosBalanza = new LazyDataModel<Balanza>(){
+            @Override
+            public List<Balanza> load(int first ,int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters){
+                return saldosService.getSubCuentas(startsWith, selectedEmpresa.getNombre(), ejercicio, first, pageSize);
+            }
+        };
     }
     
     public void listenerChangeEmpresa(){

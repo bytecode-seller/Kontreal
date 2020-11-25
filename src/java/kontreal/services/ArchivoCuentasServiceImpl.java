@@ -1,12 +1,12 @@
 package kontreal.services;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ejb.Stateless;
 import kontreal.dao.CuentaDao;
 import kontreal.dao.EmpresaDao;
 import kontreal.dto.ArchivoCuentasDTO;
@@ -14,6 +14,7 @@ import kontreal.entities.Cuenta;
 import kontreal.entities.Empresa;
 import kontreal.exceptions.CustomException;
 import kontreal.util.DateUtils;
+import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,8 +24,7 @@ import org.jsoup.select.Elements;
  *
  * @author Martin Tepostillo
  */
-@Stateless
-public class ArchivoCuentasServiceImpl implements ArchivoCuentasService{
+public class ArchivoCuentasServiceImpl implements ArchivoCuentasService, Serializable{
     
     final static int NIVEL = 0;
     final static int CUENTA = 1;
@@ -56,7 +56,7 @@ public class ArchivoCuentasServiceImpl implements ArchivoCuentasService{
         
         String fechaCatalogo = getElement(html,1,0).text();
         
-        Date fechaParseada = null;
+        Date fechaParseada;
         
         try {
             fechaParseada = parseFecha(fechaCatalogo);
@@ -66,7 +66,8 @@ public class ArchivoCuentasServiceImpl implements ArchivoCuentasService{
             return archivoDTO;
         }
         
-        Boolean fechaValida = DateUtils.validarUltimoDiaMes(fechaParseada.getYear(), fechaParseada.getMonth(), fechaParseada.getDate());
+        DateTime dTemp = new DateTime(fechaParseada);
+        Boolean fechaValida = DateUtils.validarUltimoDiaMes(dTemp.getYear(), dTemp.getMonthOfYear(), dTemp.getDayOfMonth());
         
         //Si la fecha de la balanza es invalida se lanza una Excepcion
         if (!fechaValida){
@@ -79,7 +80,7 @@ public class ArchivoCuentasServiceImpl implements ArchivoCuentasService{
         
         String fechaDescarga = getElement(html,1,1).text();
         
-        Date fechaParseadaDescarga = null;
+        Date fechaParseadaDescarga;
         
         try {
             fechaParseadaDescarga = parseFechaDescarga(fechaDescarga);
@@ -91,7 +92,7 @@ public class ArchivoCuentasServiceImpl implements ArchivoCuentasService{
         
         archivoDTO.setFechaDescarga(fechaParseadaDescarga);
         
-        Cuenta c  = null;
+        Cuenta c;
         Map<String, String> cuentasNoRegistradas = new HashMap<>();
         ArrayList<Cuenta> registrosCatalogo = new ArrayList<>();
         Empresa e = EmpresaDao.searchByName(nombreEmpresa);

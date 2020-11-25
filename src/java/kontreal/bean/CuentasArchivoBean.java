@@ -6,10 +6,12 @@ import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.ejb.EJB;
+import javax.enterprise.inject.New;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.inject.Inject;
 import javax.inject.Named;
 import kontreal.dao.CuentaDao;
 import kontreal.dao.LogArchivoBalanzaDao;
@@ -17,6 +19,7 @@ import kontreal.dto.ArchivoCuentasDTO;
 import kontreal.entities.Cuenta;
 import kontreal.entities.LogArchivoBalanza;
 import kontreal.services.ArchivoCuentasService;
+import kontreal.services.ArchivoCuentasServiceImpl;
 import kontreal.util.FileUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -38,7 +41,7 @@ public class CuentasArchivoBean implements Serializable {
     final static int DIG = 5;
     final static int EDO = 6;
     final static int DIVISA = 7;
-    @EJB
+    @Inject @New(ArchivoCuentasServiceImpl.class)
     private ArchivoCuentasService archivoCuentasService;
     private UploadedFile file;
     private Date fecha;

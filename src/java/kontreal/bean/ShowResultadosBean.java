@@ -6,18 +6,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
+import javax.enterprise.inject.New;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import kontreal.dao.BalanzaDao;
 import kontreal.dto.ResultadosDTO;
 import kontreal.dto.ResultadosTotalesDTO;
 import kontreal.dto.UtilidadPerdidaDTO;
 import kontreal.entities.Empresa;
 import kontreal.services.ResultadosService;
+import kontreal.services.ResultadosServiceImpl;
 import org.joda.time.DateTime;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.chart.Axis;
@@ -62,7 +64,7 @@ public class ShowResultadosBean implements Serializable {
     private Empresa selectedEmpresa;
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
-    @EJB
+    @Inject @New(ResultadosServiceImpl.class)
     private ResultadosService resultadosService;
 
     public void setSessionBean(SessionBean sessionBean) {

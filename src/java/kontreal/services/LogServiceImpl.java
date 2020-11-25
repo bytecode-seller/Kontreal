@@ -1,9 +1,9 @@
 package kontreal.services;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
-import javax.ejb.Stateless;
 import kontreal.dao.LogArchivoBalanzaDao;
 import kontreal.entities.LogArchivoBalanza;
 
@@ -11,8 +11,7 @@ import kontreal.entities.LogArchivoBalanza;
  *
  * @author Martin Tepostillo
  */
-@Stateless
-public class LogServiceImpl implements LogService{
+public class LogServiceImpl implements LogService, Serializable{
 
     @Override
     public List<LogArchivoBalanza> getByDateRangeCarga(Date desde, Date hasta) {

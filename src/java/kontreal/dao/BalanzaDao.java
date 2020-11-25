@@ -86,13 +86,18 @@ public class BalanzaDao {
         Session session = HibernateUtil.getSession();
 
         if (empresa != null) {
-            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+            return ((Long)session.createQuery("SELECT COUNT(*) from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where e.nombre = :emp and c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
-                    .setString("emp", empresa.getNombre()).setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list().size();
+                    .setString("emp", empresa.getNombre())
+                    .setString("cue", cuenta.getNumeroCuenta())
+                    .setInteger("eje", ejercicio)
+                    .uniqueResult()).intValue();
         } else {
-            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+            return ((Long)session.createQuery("SELECT COUNT(*) from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where c.numeroCuenta = :cue and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
-                    .setString("cue", cuenta.getNumeroCuenta()).setInteger("eje", ejercicio).list().size();
+                    .setString("cue", cuenta.getNumeroCuenta())
+                    .setInteger("eje", ejercicio)
+                    .uniqueResult()).intValue();
         }
     }
     
@@ -125,13 +130,16 @@ public class BalanzaDao {
 
         if (empresa != null) {
             System.out.println("Entro en saldo empresa");
-            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+            return ((Long)session.createQuery("SELECT COUNT(*) from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where e.nombre = :emp and YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
-                    .setString("emp", empresa.getNombre()).setInteger("eje", ejercicio).list().size();
+                    .setString("emp", empresa.getNombre())
+                    .setInteger("eje", ejercicio)
+                    .uniqueResult()).intValue();
         } else {
-            return session.createQuery("from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
+            return ((Long)session.createQuery("SELECT COUNT(*) from Balanza b left join fetch b.cuenta c left join fetch b.cuenta.empresa e "
                     + "where YEAR(b.fecha) = :eje order by b.cuenta.tipo, b.cuenta.numeroCuenta, b.fecha")
-                    .setInteger("eje", ejercicio).list().size();
+                    .setInteger("eje", ejercicio)
+                    .uniqueResult()).intValue();
         }
     }
 
@@ -164,6 +172,28 @@ public class BalanzaDao {
 //        return session.createFilter(reporte.getLcuentas(), "select b from Balanza b left join fetch b.cuenta c "
 //                + "where b.cuenta.empresa = :emp and b.cuenta = this and b.fecha = :fec "
 //                + "order by b.cuenta.empresa, b.cuenta.tipo, b.cuenta.cuenta").setEntity("emp", empresa).setDate("fec", fecha).list();
+    }
+    
+    public static List<Balanza> getSubCuentas(String startsWith, String nombreEmpresa, int ejercicio, int first, int pageSize){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        return session.createQuery("FROM Balanza b WHERE b.cuenta.numeroCuenta LIKE :startsWith AND b.cuenta.empresa.nombre = :nombreEmpresa AND YEAR(b.fecha) = :ejercicio")
+                .setString("nombreEmpresa", nombreEmpresa)
+                .setString("startsWith", startsWith+"%")
+                .setInteger("ejercicio", ejercicio)
+                .setFirstResult(first)
+                .setMaxResults(pageSize)
+                .list();
+    }
+    
+    public static Long getNumSubCuentas(String startsWith, String nombreEmpresa, int ejercicio){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        return (Long)session.createQuery("SELECT COUNT(*) FROM Balanza b WHERE YEAR(b.fecha)= :ejercicio AND b.cuenta.empresa.nombre = :nombreEmpresa AND b.cuenta.numeroCuenta LIKE :startsWith")
+                .setString("nombreEmpresa", nombreEmpresa)
+                .setString("startsWith", startsWith+"%")
+                .setInteger("ejercicio", ejercicio)
+                .uniqueResult();
     }
 
     public static List<Date> getFechasBalanza() {

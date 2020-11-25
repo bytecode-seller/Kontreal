@@ -13,10 +13,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.inject.Named;
 import kontreal.dao.BalanzaDao;
 import kontreal.dao.CuentaDao;
 import kontreal.dao.EmpresaDao;
@@ -31,7 +31,7 @@ import org.primefaces.event.data.SortEvent;
  *
  * @author modima65
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class ShowBalanzaBean implements Serializable {
 

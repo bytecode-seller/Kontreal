@@ -1,5 +1,6 @@
 package kontreal.services;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,13 +20,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import kontreal.errors.Error;
+import org.joda.time.DateTime;
 
 /**
  *
  * @author Martin Tepostillo
  */
-@Stateless
-public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
+public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService, Serializable{
      
     final static int CUENTA = 0;
     final static int NOMBRE_CUENTA = 1;
@@ -73,8 +74,8 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService{
             datosArchivo.setValid(false);
             return datosArchivo;
         }
-        
-        Boolean fechaBalanzaValida = DateUtils.validarUltimoDiaMes(fechaBalanzaParseada.getYear(), fechaBalanzaParseada.getMonth(), fechaBalanzaParseada.getDate());
+        DateTime dTemp = new DateTime(fechaBalanzaParseada);
+        Boolean fechaBalanzaValida = DateUtils.validarUltimoDiaMes(dTemp.getYear(), dTemp.getMonthOfYear(), dTemp.getDayOfMonth());
         
         //Si la fecha de la balanza es invalida se lanza una Excepcion
         if (!fechaBalanzaValida){

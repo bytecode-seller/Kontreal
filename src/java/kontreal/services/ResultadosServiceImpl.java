@@ -1,11 +1,11 @@
 package kontreal.services;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.Stateless;
 import kontreal.dao.EmpresaDao;
 import kontreal.dao.ResultadosDao;
 import kontreal.dto.ResultadosConsultaDTO;
@@ -23,8 +23,7 @@ import org.joda.time.DateTime;
  *
  * @author Martin Tepostillo
  */
-@Stateless
-public class ResultadosServiceImpl implements ResultadosService {
+public class ResultadosServiceImpl implements ResultadosService, Serializable {
 
     @Override
     public List<Empresa> getAllEmpresas() {
