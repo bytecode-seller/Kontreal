@@ -1,7 +1,6 @@
 package kontreal.services;
 
 import java.util.List;
-import javax.ejb.Local;
 import kontreal.dto.ResultadosDTO;
 import kontreal.dto.ResultadosTotalesDTO;
 import kontreal.dto.UtilidadPerdidaDTO;
