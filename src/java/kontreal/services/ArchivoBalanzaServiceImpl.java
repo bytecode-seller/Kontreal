@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ejb.Stateless;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import kontreal.dao.BalanzaDao;
 import kontreal.dao.CuentaDao;
 import kontreal.dao.EmpresaDao;
@@ -26,6 +27,8 @@ import org.joda.time.DateTime;
  *
  * @author Martin Tepostillo
  */
+@Named
+@ViewScoped
 public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService, Serializable{
      
     final static int CUENTA = 0;

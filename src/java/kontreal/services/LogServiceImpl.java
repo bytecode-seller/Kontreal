@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import kontreal.dao.LogArchivoBalanzaDao;
 import kontreal.entities.LogArchivoBalanza;
 
@@ -11,6 +13,8 @@ import kontreal.entities.LogArchivoBalanza;
  *
  * @author Martin Tepostillo
  */
+@Named
+@ViewScoped
 public class LogServiceImpl implements LogService, Serializable{
 
     @Override

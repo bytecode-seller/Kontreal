@@ -5,13 +5,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.New;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import kontreal.dao.LogArchivoBalanzaDao;
 import kontreal.entities.LogArchivoBalanza;
-import kontreal.services.LogService;
 import kontreal.services.LogServiceImpl;
 
 /**
@@ -27,8 +25,8 @@ public class LogArchivoBalanzaBean implements Serializable{
     Date hastaCarga;
     Date desdeConsulta;
     Date hastaConsulta;
-    @Inject @New(LogServiceImpl.class)
-    LogService logService;
+    @Inject
+    LogServiceImpl logService;
 
     public LogArchivoBalanzaBean() {
         

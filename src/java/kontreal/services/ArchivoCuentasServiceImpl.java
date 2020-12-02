@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import kontreal.dao.CuentaDao;
 import kontreal.dao.EmpresaDao;
 import kontreal.dto.ArchivoCuentasDTO;
@@ -24,6 +26,8 @@ import org.jsoup.select.Elements;
  *
  * @author Martin Tepostillo
  */
+@Named
+@ViewScoped
 public class ArchivoCuentasServiceImpl implements ArchivoCuentasService, Serializable{
     
     final static int NIVEL = 0;

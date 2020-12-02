@@ -1,7 +1,6 @@
 package kontreal.services;
 
 import java.util.List;
-import javax.ejb.Local;
 import kontreal.entities.Balanza;
 import kontreal.entities.Cuenta;
 import kontreal.entities.Empresa;
