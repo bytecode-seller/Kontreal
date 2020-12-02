@@ -2,6 +2,8 @@ package kontreal.services;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import kontreal.dao.BalanzaDao;
 import kontreal.entities.Balanza;
 import kontreal.entities.Cuenta;
@@ -11,6 +13,8 @@ import kontreal.entities.Empresa;
  *
  * @author Martin Tepostillo
  */
+@ViewScoped
+@Named
 public class SaldosServiceImpl implements SaldosService, Serializable{
 
     @Override

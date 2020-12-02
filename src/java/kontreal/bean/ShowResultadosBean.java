@@ -6,19 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.New;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import kontreal.dao.BalanzaDao;
 import kontreal.dto.ResultadosDTO;
 import kontreal.dto.ResultadosTotalesDTO;
 import kontreal.dto.UtilidadPerdidaDTO;
 import kontreal.entities.Empresa;
-import kontreal.services.ResultadosService;
 import kontreal.services.ResultadosServiceImpl;
 import org.joda.time.DateTime;
 import org.primefaces.context.RequestContext;
@@ -34,7 +32,7 @@ import org.primefaces.model.chart.LineChartSeries;
  *
  * @author modima65
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class ShowResultadosBean implements Serializable {
 
@@ -64,8 +62,8 @@ public class ShowResultadosBean implements Serializable {
     private Empresa selectedEmpresa;
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
-    @Inject @New(ResultadosServiceImpl.class)
-    private ResultadosService resultadosService;
+    @Inject
+    private ResultadosServiceImpl resultadosService;
 
     public void setSessionBean(SessionBean sessionBean) {
         this.sessionBean = sessionBean;
@@ -83,11 +81,10 @@ public class ShowResultadosBean implements Serializable {
 
     @PostConstruct
     private void initData() {
-        initEmpresas();
-        showDialog();
+        this.empresas = resultadosService.getAllEmpresas();
     }
 
-    private void getResultados() {
+    public void resultadosListener() {
         resultadosData = resultadosService.getResultados(selectedEmpresa, ejercicio);
         resultadosTotalData = resultadosService.getResultadosTotales(this.selectedEmpresa, ejercicio);
         utilidadesData = resultadosService.getUtilidadPerdida(this.selectedEmpresa, ejercicio);
@@ -100,29 +97,6 @@ public class ShowResultadosBean implements Serializable {
             meses[k] = new DateTime().withMonthOfYear(k + 1).dayOfMonth().withMinimumValue().toDate();
         }
         grupos = new String[]{"Ingresos", "Egresos"};
-    }
-    
-    /**
-     * Gets empresas availables and initializes them.
-     */
-    private void initEmpresas(){
-        this.empresas = resultadosService.getAllEmpresas();
-    }
-    
-    private void showDialog(){
-        RequestContext.getCurrentInstance().execute("PF('empresaDialog').show();");
-    }
-    
-    public void selectEmpresaDialogListener(){
-        FacesMessage errorMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Empresa no seleccionada", "Debe seleccionar una empresa antes de continuar");
-        if(this.selectedEmpresa == null){
-            FacesContext.getCurrentInstance().addMessage("selectEmpresa", errorMessage);
-        }else {
-            System.out.println("La empresa es: " + this.selectedEmpresa.getNombre());
-            RequestContext.getCurrentInstance().execute("PF('empresaDialog').hide();");
-            getResultados();
-        }
-            
     }
 
     private void updateData2() {
@@ -143,7 +117,7 @@ public class ShowResultadosBean implements Serializable {
 
     public void resumenListener() {
         resumen = true;
-        getResultados();
+        resultadosListener();
     }
 
     // Grafica Utilidad o Pérdida

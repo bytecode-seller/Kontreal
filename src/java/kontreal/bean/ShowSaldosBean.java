@@ -6,11 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.New;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import kontreal.dao.BalanzaDao;
@@ -19,7 +17,6 @@ import kontreal.dao.EmpresaDao;
 import kontreal.entities.Balanza;
 import kontreal.entities.Cuenta;
 import kontreal.entities.Empresa;
-import kontreal.services.SaldosService;
 import kontreal.services.SaldosServiceImpl;
 import org.joda.time.DateTime;
 import org.primefaces.model.LazyDataModel;
@@ -29,11 +26,10 @@ import org.primefaces.model.SortOrder;
  *
  * @author modima65
  */
-@ManagedBean
 @ViewScoped
+@Named
 public class ShowSaldosBean implements Serializable {
 
-    @Inject @New(value = ArrayList.class)
     private List<Balanza> saldosData;
     private List<Balanza> saldosFilter;
     private final List<Integer> ejercicios;
@@ -41,17 +37,15 @@ public class ShowSaldosBean implements Serializable {
     private Cuenta cuenta;
     private int ejercicio;
     private final String[] meses;
-    @Inject @New(value = ArrayList.class)
     private List<Empresa> empresas;
-    @Inject @New(value = ArrayList.class)
     private List<Cuenta> cuentas;
     private Empresa selectedEmpresa;
     boolean changeEmpresa;
     private LazyDataModel<Balanza> saldosBalanza;
-    @ManagedProperty(value = "#{sessionBean}")
+    @Inject
     private SessionBean sessionBean;
-    @Inject @New(SaldosServiceImpl.class)
-    private SaldosService saldosService;
+    @Inject
+    private SaldosServiceImpl saldosService;
 
     public void setSessionBean(SessionBean sessionBean) {
         this.sessionBean = sessionBean;
@@ -66,6 +60,9 @@ public class ShowSaldosBean implements Serializable {
             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre", };
         ejercicios = BalanzaDao.getEjerciciosBalanza();
         ejercicio = ejercicios.get(ejercicios.size() - 1);
+        this.saldosData = new ArrayList<>();
+        this.empresas = new ArrayList<>();
+        this.cuentas = new ArrayList<>();
     }
 
     @PostConstruct

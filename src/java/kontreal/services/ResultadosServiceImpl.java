@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import kontreal.dao.EmpresaDao;
 import kontreal.dao.ResultadosDao;
 import kontreal.dto.ResultadosConsultaDTO;
@@ -23,6 +25,8 @@ import org.joda.time.DateTime;
  *
  * @author Martin Tepostillo
  */
+@Named
+@ViewScoped
 public class ResultadosServiceImpl implements ResultadosService, Serializable {
 
     @Override
@@ -63,7 +67,8 @@ public class ResultadosServiceImpl implements ResultadosService, Serializable {
             ResultadosDTO resultado = res.get(cuenta);
             int signed = resultado.getNombre().equals("H RESULTADOS ACREEDORA") ? -1 : 1;
             double sumaCargosAbonos = resultado.getResultadosAc().get(idxMes) + datarow.getCargos() + datarow.getAbonos();
-            double sumaSaldoFin = resultado.getResultadosFin().get(idxMes) +  datarow.getSaldofin();
+            double sumaSaldoFin;
+            sumaSaldoFin = sumaAcumulado(resultado.getResultadosAc().toArray(new Double[resultado.getResultadosAc().size()])) + sumaCargosAbonos;
             
             System.out.println("Suma cargos abonos para el mes " + idxMes + ": " + (sumaCargosAbonos * signed));
             System.out.println("Suma saldoFin para el mes " + idxMes + ": " + (sumaSaldoFin * signed));
@@ -77,6 +82,14 @@ public class ResultadosServiceImpl implements ResultadosService, Serializable {
         }
         
         return new ArrayList<>(res.values());
+    }
+    
+    private double sumaAcumulado(Double[] r){
+        double suma = 0;
+        for (Double d : r) {
+            suma += d;
+        }
+        return suma;
     }
     
     @Override
@@ -111,7 +124,7 @@ public class ResultadosServiceImpl implements ResultadosService, Serializable {
             ResultadosDTO resultado = res.get(cuenta);
             int signed = resultado.getNombre().equals("H RESULTADOS ACREEDORA") ? -1 : 1;
             double sumaCargosAbonos = resultado.getResultadosAc().get(idxMes) + datarow.getCargos() + datarow.getAbonos();
-            double sumaSaldoFin = resultado.getResultadosFin().get(idxMes) +  datarow.getSaldofin();
+            double sumaSaldoFin = sumaAcumulado(resultado.getResultadosAc().toArray(new Double[resultado.getResultadosAc().size()])) + sumaCargosAbonos;
             
             System.out.println("Suma cargos abonos para el mes " + idxMes + ": " + (sumaCargosAbonos * signed));
             System.out.println("Suma saldoFin para el mes " + idxMes + ": " + (sumaSaldoFin * signed));
@@ -152,8 +165,12 @@ public class ResultadosServiceImpl implements ResultadosService, Serializable {
             }
             ResultadosTotalesDTO resultado = res.get(tipo);
             int signed = resultado.getTipo().equals("H RESULTADOS AC") ? -1 : 1;
-            resultado.getResultadosAcreedora().set(idxMes, resultado.getResultadosAcreedora().get(idxMes) + (r.getSumatoriaCargos() + r.getSumatoriaAbonos()) * signed);
-            resultado.getResultadosDeudora().set(idxMes, resultado.getResultadosDeudora().get(idxMes) + (r.getSumatoriaSaldofin() * signed));
+            
+            Double rAcreedora = resultado.getResultadosAcreedora().get(idxMes) + (r.getSumatoriaCargos() + r.getSumatoriaAbonos()) *signed;
+            Double rDeudora = sumaAcumulado(resultado.getResultadosAcreedora().toArray(new Double[resultado.getResultadosAcreedora().size()])) + rAcreedora * signed;
+            
+            resultado.getResultadosAcreedora().set(idxMes, rAcreedora);
+            resultado.getResultadosDeudora().set(idxMes, rDeudora);
             res.put(tipo, resultado);
         }
         
@@ -184,8 +201,12 @@ public class ResultadosServiceImpl implements ResultadosService, Serializable {
             }
             ResultadosTotalesDTO resultado = res.get(tipo);
             int signed = resultado.getTipo().equals("H RESULTADOS AC") ? -1 : 1;
-            resultado.getResultadosAcreedora().set(idxMes, resultado.getResultadosAcreedora().get(idxMes) + (r.getSumatoriaCargos() + r.getSumatoriaAbonos()) * signed);
-            resultado.getResultadosDeudora().set(idxMes, resultado.getResultadosDeudora().get(idxMes) + (r.getSumatoriaSaldofin() * signed));
+            
+            Double rAcreedora = resultado.getResultadosAcreedora().get(idxMes) + (r.getSumatoriaCargos() + r.getSumatoriaAbonos()) *signed;
+            Double rDeudora = sumaAcumulado(resultado.getResultadosAcreedora().toArray(new Double[resultado.getResultadosAcreedora().size()])) + rAcreedora * signed;
+            
+            resultado.getResultadosAcreedora().set(idxMes, rAcreedora);
+            resultado.getResultadosDeudora().set(idxMes, rDeudora);
             res.put(tipo, resultado);
         }
         

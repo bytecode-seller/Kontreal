@@ -38,38 +38,28 @@
                 </p:layoutUnit>
 
                 <p:layoutUnit position="center" header="ESTADO DE RESULTADOS">
-                    <h:form>
-                        <p:dialog header="Elegir empresa" widgetVar="empresaDialog" id="empresaDialog" closable="false">
-                            <br/><br/>
-                            
-                            <p:outputPanel id="dialogContent" >
-                                <p:outputLabel style="margin: auto auto; width: 100%;" >
-                                    <b>Elegir una empresa para mostrar su estado de resultados</b>
-                                </p:outputLabel>
-                                <br/>
-                                <p:selectOneMenu id="selectEmpresa" value="#{showResultadosBean.selectedEmpresa}" converter="selectOneMenuConverter" var="emp">
-                                    <f:selectItem itemLabel="Select One" itemValue="" />
-                                    <f:selectItems value="#{showResultadosBean.empresas}" var="empresa" itemLabel="#{empresa.nombre}" itemValue="#{empresa}"/>
-                                    <p:column>#{emp.nombre}</p:column>
-                                </p:selectOneMenu>
-                                <p:messages for="selectEmpresa" id="msjSelect"/>
-                                <br/>
-                                <p:commandButton value="Aceptar" action="#{showResultadosBean.selectEmpresaDialogListener()}" update="msjSelect @form"/>
-                            </p:outputPanel>
-                        </p:dialog>
+                    <h:form id="idFormResultados">
                         <p:panel>
                             <f:facet name="header">
                                 <p:toolbar id="toolbar">
                                     <p:toolbarGroup align="left">
+                                        <h:outputText value="Empresa"/>
+                                        <p:spacer height="0" width="5"/>
+                                        <p:selectOneMenu id="selectEmpresa" value="#{showResultadosBean.selectedEmpresa}" converter="selectOneMenuConverter" var="emp">
+                                            <p:ajax update="@form" listener="#{showResultadosBean.resultadosListener()}"/>
+                                            <f:selectItem itemLabel="Select One" itemValue="" />
+                                            <f:selectItems value="#{showResultadosBean.empresas}" var="empresa" itemLabel="#{empresa.nombre}" itemValue="#{empresa}"/>
+                                            <p:column>#{emp.nombre}</p:column>
+                                        </p:selectOneMenu>
                                         <h:outputText value="Del Ejercicio"/>
                                         <p:spacer height="0" width="5"/>
-                                        <p:selectOneMenu value="#{showResultadosBean.ejercicio}" style="width: 75px;">
+                                        <p:selectOneMenu id="selectOfEjercicio" value="#{showResultadosBean.ejercicio}" style="width: 75px;">
                                             <f:selectItems value="#{showResultadosBean.ejercicios}" />
                                             <p:ajax event="change" listener="#{showResultadosBean.resumenListener()}" update="@form"/>
                                         </p:selectOneMenu>
                                     </p:toolbarGroup>
                                     <p:toolbarGroup align="right">
-                                        <p:commandButton value="Compatir" icon="ui-icon-person" process="@this"/>
+                                        <p:commandButton value="Compartir" icon="ui-icon-person" process="@this"/>
                                     </p:toolbarGroup>
                                 </p:toolbar>
                             </f:facet>
