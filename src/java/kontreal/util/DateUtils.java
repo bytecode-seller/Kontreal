@@ -77,7 +77,7 @@ public class DateUtils {
     public static boolean validarUltimoDiaMes(int anio, int mes, int dia) {
 
         Calendar calendario = Calendar.getInstance();
-        calendario.set(anio, mes , 1);
+        calendario.set(anio, mes-1 , 1);
         
         return  calendario.getActualMaximum(Calendar.DAY_OF_MONTH) == dia;
     }

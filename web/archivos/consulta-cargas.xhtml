@@ -1,0 +1,25 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:p="http://primefaces.org/ui" >
+    <h:head>
+        <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+    </h:head>
+    <h:body>
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+            </p:layoutUnit>
+            <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu.xhtml"/>
+            </p:layoutUnit>
+        </p:layout>
+    </h:body>
+</html>

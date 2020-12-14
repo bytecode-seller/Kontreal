@@ -13,9 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import kontreal.dao.BalanzaDao;
 import kontreal.dao.CuentaDao;
@@ -54,7 +54,7 @@ public class ShowBalanzaBean implements Serializable {
     private double[] totales;
     private int sortColumn;
     private Date fecha;
-    @ManagedProperty(value = "#{sessionBean}")
+    @Inject
     private SessionBean sessionBean;
 
     public void setSessionBean(SessionBean sessionBean) {

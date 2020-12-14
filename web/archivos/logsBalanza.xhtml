@@ -107,7 +107,7 @@
                                 </p:toolbar>
                             </f:facet> 
                             
-                            <p:column filterBy="#{log.nombre}" width="25%">
+                            <p:column filterBy="#{log.nombre}" filterMatchMode="contains" width="25%">
                                 <f:facet name="header">
                                     <h:outputText value="nombre" />
                                 </f:facet>
@@ -127,7 +127,7 @@
                             </p:column>
                             <p:column filterStyle="display:none; visibility:hidden;">
                                 <f:facet name="header">
-                                    <h:outputText value="Fecha de consulta al" />
+                                    <h:outputText value="Fecha de balanza/catalogo de cuentas" />
                                 </f:facet>
                                 <h:outputText value="#{log.fechaArchivo}" />
                             </p:column>
