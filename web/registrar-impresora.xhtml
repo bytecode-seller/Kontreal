@@ -1,0 +1,54 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:p="http://primefaces.org/ui" >
+    <h:head>
+        <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+            <h:outputScript name="web-bluetooth-utils.js" library="js" target="head"/>
+            <h:outputScript name="esc-pos-encoder.js" library="js" target="head"/>
+            <h:outputScript name="web-bluetooth-print.js" library="js" target="body"/>
+    </h:head>
+    <h:body>
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+            </p:layoutUnit>
+            <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu.xhtml"/>
+            </p:layoutUnit>
+            <p:layoutUnit id="idUnidad" position="center" header="Registrar nueva impresora">
+                <h:form id="printerRegisterForm">
+                    <p:outputPanel id="registerPanel">
+                        <p:outputLabel value="1. Buscar impresora..."/>
+                        <p:commandButton icon="fa fa-search" value="buscar" onclick="buscar();"/><br/>
+                        <p:outputLabel value="Nombre de la impresora: "/>
+                        <p:outputLabel id="printerName"/>
+                        <h:inputHidden id="printerNameHidden" value="#{registroImpresoraBean.nombre}"/>
+                        <hr/>
+                        <p:outputLabel value="2. Servicio de impresión: "/><br/>
+                        <p:inputText id="printService" disabled="true"/>
+                        <h:inputHidden id="printServiceHidden" value="#{registroImpresoraBean.service}"/><br/>
+                        <hr/>
+                        <p:outputLabel value="3. Caracteristica de impresión"/><br/>
+                        <p:inputText id="printCharacteristic" disabled="true"/>
+                        <h:inputHidden id="printCharacteristicHidden" value="#{registroImpresoraBean.characteristic}"/><br/>
+                        <hr/>
+                        <p:commandButton id="printButton" icon="fa fa-print" value="Impresion de prueba" onclick="impresionPrueba();" disabled="true"/>
+                        <p:commandButton id="savePrinterButton" actionListener="#{registroImpresoraBean.guardar()}" icon="fa fa-save" value="Guardar Impresora" disabled="#{registroImpresoraBean.saveIsDisabled}"/><br/>
+                    </p:outputPanel>
+                </h:form>
+            </p:layoutUnit>
+            <p:confirmDialog id="confirmDialog" message="La impresión se completo con exito?" header="Confirmación de impresion" severity="alert" widgetVar="cd">
+                <p:commandButton id="confirmPrint" icon="fa fa-check" value="Si" actionListener="#{registroImpresoraBean.enableSave()}" oncomplete="PF('cd').hide();"/>
+                <p:commandButton id="failPrint" icon="fa fa-times" value="No" oncomplete="PF('cd').hide();"/>
+            </p:confirmDialog>
+        </p:layout>
+    </h:body>
+</html>

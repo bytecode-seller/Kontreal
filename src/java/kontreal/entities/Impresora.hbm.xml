@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="kontreal.entities.Impresora" table="impresora" catalog="contabilidad" optimistic-lock="version">
+        <id name="idImpresora" type="java.lang.Integer">
+            <column name="id_impresora" />
+            <generator class="identity" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="nombre" length="45"/>
+        </property>
+        <property name="printService" type="string">
+            <column name="service" length="45" not-null="true" />
+        </property>
+        <property name="printCharacteristic" type="string">
+            <column name="characteristic" length="45" />
+        </property>
+    </class>
+</hibernate-mapping>

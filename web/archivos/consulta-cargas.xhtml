@@ -11,6 +11,9 @@
 
             <h:outputStylesheet name="css/default.css"/>
             <h:outputScript name="js/localization.js"/>
+            <h:outputScript name="web-bluetooth-utils.js" library="js" target="head"/>
+            <h:outputScript name="esc-pos-encoder.js" library="js" target="head"/>
+            <h:outputScript name="web-bluetooth-print.js" library="js" target="body"/>
     </h:head>
     <h:body>
         <p:layout fullPage="true">
@@ -19,6 +22,14 @@
             </p:layoutUnit>
             <p:layoutUnit position="west" header="Menú">
                     <ui:include src="/menu.xhtml"/>
+            </p:layoutUnit>
+            <p:layoutUnit position="center" header="Carga de balanza de comprobación">
+                <h:form id="formImpresion">
+                    <p:outputPanel id="devicePanel">
+                        <p:commandButton id="searchDevices" value="conectar impresora" onclick="buscar();"/>
+                        <p:outputLabel id="deviceLabel" />
+                    </p:outputPanel>
+                </h:form>
             </p:layoutUnit>
         </p:layout>
     </h:body>

@@ -22,8 +22,10 @@ import kontreal.dao.CuentaDao;
 import kontreal.dao.EmpresaDao;
 import kontreal.entities.Balanza;
 import kontreal.entities.Empresa;
+import kontreal.entities.Impresora;
 import kontreal.entities.Lminicatalogo;
 import kontreal.entities.Minicatalogo;
+import kontreal.services.ImpresoraService;
 import org.joda.time.DateTime;
 import org.primefaces.event.data.SortEvent;
 
@@ -39,6 +41,7 @@ public class ShowBalanzaBean implements Serializable {
 
     private List<Balanza> balanzasData;
     private List<Balanza> balanzasFilter;
+    private Balanza selectedBalanza;
 
     private String selectedMiniCatalogo;
     private Map<String, Minicatalogo> miniCatalogos;
@@ -54,8 +57,15 @@ public class ShowBalanzaBean implements Serializable {
     private double[] totales;
     private int sortColumn;
     private Date fecha;
+    
+    private List<Impresora> impresoras;
+    private Impresora selectedImpresora;
+    private boolean printDisable = true;
+    
     @Inject
     private SessionBean sessionBean;
+    @Inject
+    private ImpresoraService impresoraService;
 
     public void setSessionBean(SessionBean sessionBean) {
         this.sessionBean = sessionBean;
@@ -75,6 +85,7 @@ public class ShowBalanzaBean implements Serializable {
         nivelesConverter();
         empresasItems();
         dropFilters();
+        getImpresorasData();
     }
 
     private void updateData() {
@@ -247,6 +258,27 @@ public class ShowBalanzaBean implements Serializable {
         }
         return label;
     }
+    
+    private void getImpresorasData(){
+        impresoras = impresoraService.getImpresoras();
+    }
+    
+    public void enablePrint(){
+        System.out.println("Entro a listener de enable print");
+        printDisable = false;
+    }
+    
+    public void viewSelectedImpresora(){
+        System.out.println(selectedImpresora.getNombre() + " : " + selectedImpresora.getPrintService());
+    }
+
+    public Balanza getSelectedBalanza() {
+        return selectedBalanza;
+    }
+
+    public void setSelectedBalanza(Balanza selectedBalanza) {
+        this.selectedBalanza = selectedBalanza;
+    }
 
     public List<Balanza> getBalanzasData() {
         return balanzasData;
@@ -319,4 +351,29 @@ public class ShowBalanzaBean implements Serializable {
     public void setSelectedNivel(int selectedNivel) {
         this.selectedNivel = selectedNivel;
     }
+
+    public List<Impresora> getImpresoras() {
+        return impresoras;
+    }
+
+    public void setImpresoras(List<Impresora> impresoras) {
+        this.impresoras = impresoras;
+    }
+
+    public Impresora getSelectedImpresora() {
+        return selectedImpresora;
+    }
+
+    public void setSelectedImpresora(Impresora selectedImpresora) {
+        this.selectedImpresora = selectedImpresora;
+    }
+
+    public boolean isPrintDisable() {
+        return printDisable;
+    }
+
+    public void setPrintDisable(boolean printDisable) {
+        this.printDisable = printDisable;
+    }
+    
 }
