@@ -167,7 +167,7 @@ async function checkAndWriteService(){
     for(let s of servicesList){
         for(let c of charsList){
             try{
-                await device.writeCharacteristicValueFromPrimaryService(s,c,encodeDataToPrint('\n','left'));
+                await device.writeCharacteristicValueFromPrimaryService(s,c,encodeDataToPrint('\n','right'));
                 printService = s;
                 printCharacteristic = c;
                 await print();
@@ -192,12 +192,35 @@ function getServicesAndCharacteristics(){
 }
 
 async function print(){
-    console.log('entro a print')
+    console.log('entro a print');
+    let lengthfirst;
+    let lengthsecond;
     let data = await getDataBalanza();
     await console.log(data);
     for(let d=0; d < data.length;d+=2){
-            await device.writeCharacteristicValueFromPrimaryService(printService,printCharacteristic,await encodeDataToPrint(data[d], 'left'));
-            await device.writeCharacteristicValueFromPrimaryService(printService,printCharacteristic,await encodeDataToPrint(data[d+1], 'right'));
+        lengthfirst = data[d].length;
+        lengthsecond = data[d+1].length;
+        if(lengthfirst+lengthsecond < 48){
+            let dataWithSpaces = data[d] + await addSpaces(lengthfirst+lengthsecond,48);
+            await device.writeCharacteristicValueFromPrimaryService(printService,printCharacteristic,await encodeDataToPrint(dataWithSpaces, 'left')); 
+        }else{
+            let dataSeparated = await separateData(data[d],48);
+            let i=0;
+            let dataWithSpaces;
+            for(i=0;i<(dataSeparated.length-1);i++){
+                dataWithSpaces = dataSeparated[i] + await addSpaces(dataSeparated[i].length,48);
+                console.log(`data con exceso: ${i}. ${dataWithSpaces}`);
+                await device.writeCharacteristicValueFromPrimaryService(printService,printCharacteristic,await encodeDataToPrint(dataWithSpaces, 'left'));
+            }
+            let lastItem = '';
+            dataWithSpaces = '';
+            lastItem = dataSeparated[dataSeparated.length-1];
+            dataWithSpaces = lastItem + await addSpaces(lastItem.length+data[d+1].length,48);
+            console.log(`data con exceso: ${dataWithSpaces}`);
+            await device.writeCharacteristicValueFromPrimaryService(printService,printCharacteristic,await encodeDataToPrint(dataWithSpaces, 'left')); 
+        }
+            //await device.writeCharacteristicValueFromPrimaryService(printService,printCharacteristic,await encodeDataToPrint(data[d], 'left'));
+        await device.writeCharacteristicValueFromPrimaryService(printService,printCharacteristic,await encodeDataToPrint(data[d+1], 'right'));
     }
     if(data.length%2 !== 0){
         await device.writeCharacteristicValueFromPrimaryService(printService,printCharacteristic,await encodeDataToPrint('', 'right'));
@@ -209,15 +232,39 @@ function encodeDataToPrint(data, align){
     let result;
     if(align === 'right'){
         result = encoder
-        .codepage('cp1250')
         .text(data)
         .newline()
         .encode();
     }else{
         result = encoder
         .text(data)
-        .text('        ')
         .encode();
     }
     return result;
+}
+
+function addSpaces(init,max){
+    let spaces = '';
+    let i=0;
+    
+    for(i=init;i<max;i++){
+        spaces += ' ';
+    }
+    return spaces; 
+}
+
+function separateData(data,max){
+    let dataLength = data.length;
+    let limit = max/2;
+    let i=0;
+    let separatedData = [];
+    
+    while(i<dataLength){
+        separatedData.push(data.substring(i,limit));
+        console.log(`push: ${i}-${limit}` + data.substring(i,limit));
+        i+=limit;
+        limit+=limit;
+    }
+    
+    return separatedData;
 }

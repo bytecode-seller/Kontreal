@@ -20,6 +20,7 @@ public class RegistroImpresoraBean implements Serializable{
     private String service;
     private String characteristic;
     private boolean saveIsDisabled;
+    private Integer tamanio;
     
     @Inject
     private ImpresoraService impresoraService;
@@ -32,7 +33,7 @@ public class RegistroImpresoraBean implements Serializable{
     }
     
     public void guardar(){
-        impresoraService.guardarImpresora(nombre,service,characteristic);
+        impresoraService.guardarImpresora(nombre,service,characteristic, tamanio);
     }
     
     public void enableSave(){
@@ -69,6 +70,14 @@ public class RegistroImpresoraBean implements Serializable{
 
     public void setSaveIsDisabled(boolean saveIsDisabled) {
         this.saveIsDisabled = saveIsDisabled;
+    }
+
+    public Integer getTamanio() {
+        return tamanio;
+    }
+
+    public void setTamanio(Integer tamanio) {
+        this.tamanio = tamanio;
     }
     
 }

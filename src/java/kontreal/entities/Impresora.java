@@ -12,15 +12,17 @@ public class Impresora implements Serializable{
     private String nombre;
     private String printService;
     private String printCharacteristic;
+    private Integer tamanio;
 
     public Impresora() {
     }
 
-    public Impresora(Integer idImpresora, String nombre, String printService, String printCharacteristic) {
+    public Impresora(Integer idImpresora, String nombre, String printService, String printCharacteristic, Integer tamanio) {
         this.idImpresora = idImpresora;
         this.nombre = nombre;
         this.printService = printService;
         this.printCharacteristic = printCharacteristic;
+        this.tamanio = tamanio;
     }
 
     public Integer getIdImpresora() {
@@ -53,6 +55,14 @@ public class Impresora implements Serializable{
 
     public void setPrintCharacteristic(String printCharacteristic) {
         this.printCharacteristic = printCharacteristic;
+    }
+
+    public Integer getTamanio() {
+        return tamanio;
+    }
+
+    public void setTamanio(Integer tamanio) {
+        this.tamanio = tamanio;
     }
     
 }

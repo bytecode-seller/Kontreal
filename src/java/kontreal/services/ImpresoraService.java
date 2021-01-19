@@ -14,11 +14,12 @@ import kontreal.entities.Impresora;
 @Named
 @ViewScoped
 public class ImpresoraService implements Serializable {
-    public void guardarImpresora(String nombre, String printService, String printCharacteristic){
+    public void guardarImpresora(String nombre, String printService, String printCharacteristic, Integer tamanio){
         Impresora impresora = new Impresora();
         impresora.setNombre(nombre);
         impresora.setPrintService(printService);
         impresora.setPrintCharacteristic(printCharacteristic);
+        impresora.setTamanio(tamanio);
         ImpresoraDao.guardarImpresora(impresora);
     }
     

@@ -40,6 +40,12 @@
                         <p:inputText id="printCharacteristic" disabled="true"/>
                         <h:inputHidden id="printCharacteristicHidden" value="#{registroImpresoraBean.characteristic}"/><br/>
                         <hr/>
+                        <p:selectOneMenu value="#{registroImpresoraBean.tamanio}" var="tam" style="width: 200px;" converter="selectOneMenuConverter">
+                                                <f:selectItem itemLabel="Seleccionar tamaño" itemValue="" />
+                                                <f:selectItem itemLabel="80mm" itemValue="80"/>
+                                                <f:selectItem itemLabel="100mm" itemValue="100"/>
+                        </p:selectOneMenu>
+                        <br/><hr/>
                         <p:commandButton id="printButton" icon="fa fa-print" value="Impresion de prueba" onclick="impresionPrueba();" disabled="true"/>
                         <p:commandButton id="savePrinterButton" actionListener="#{registroImpresoraBean.guardar()}" icon="fa fa-save" value="Guardar Impresora" disabled="#{registroImpresoraBean.saveIsDisabled}"/><br/>
                     </p:outputPanel>
