@@ -27,7 +27,7 @@
                 <h:form id="printerRegisterForm">
                     <p:outputPanel id="registerPanel">
                         <p:outputLabel value="1. Buscar impresora..."/>
-                        <p:commandButton icon="fa fa-search" value="buscar" onclick="buscar();"/><br/>
+                        <p:commandButton icon="fa fa-search" value="buscar" onclick="buscar();"/><p:commandButton id="help" value="Ayuda" type="button"/><br/>
                         <p:outputLabel value="Nombre de la impresora: "/>
                         <p:outputLabel id="printerName"/>
                         <h:inputHidden id="printerNameHidden" value="#{registroImpresoraBean.nombre}"/>
@@ -55,6 +55,12 @@
                 <p:commandButton id="confirmPrint" icon="fa fa-check" value="Si" actionListener="#{registroImpresoraBean.enableSave()}" oncomplete="PF('cd').hide();"/>
                 <p:commandButton id="failPrint" icon="fa fa-times" value="No" oncomplete="PF('cd').hide();"/>
             </p:confirmDialog>
+            <p:overlayPanel for="printerRegisterForm:help">
+                <video width="640" height="480" controls="true">
+                    <source src="./resources/video/instrucciones-registro-impresora.mp4" type="video/mp4" />
+                    Tu navegador no soporta la reproduccion de video.
+                </video>
+            </p:overlayPanel>
         </p:layout>
     </h:body>
 </html>
