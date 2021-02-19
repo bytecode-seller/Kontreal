@@ -8,7 +8,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import kontreal.dao.LogArchivoBalanzaDao;
 import kontreal.entities.LogArchivoBalanza;
 import kontreal.services.LogServiceImpl;
 
@@ -35,7 +34,7 @@ public class LogArchivoBalanzaBean implements Serializable{
     @PostConstruct
     public void initData(){
         logs = new ArrayList<>();
-        boolean addAll = logs.addAll( LogArchivoBalanzaDao.findAll() );
+        boolean addAll = logs.addAll( logService.getTwoMontsAgo() );
         if(!addAll)
             System.out.println("No se cargaron los logs");
     }
@@ -51,13 +50,9 @@ public class LogArchivoBalanzaBean implements Serializable{
     public void setFilteredLogs(List<LogArchivoBalanza> filteredLogs) {
         this.filteredLogs = filteredLogs;
     }
-    
-    public void chooseFechaCarga() {
-        logs = logService.getByDateRangeCarga(desdeCarga, hastaCarga);
-    }
 
-    public void chooseFechaConsulta() {
-        logs = logService.getByDateRangeConsulta(desdeConsulta, hastaConsulta);
+    public void chooseFecha() {
+        logs = logService.getByDateWithCritera(desdeCarga,hastaCarga,desdeConsulta, hastaConsulta);
     }
     
     public Date getDesdeCarga() {
@@ -97,6 +92,6 @@ public class LogArchivoBalanzaBean implements Serializable{
         this.desdeConsulta = null;
         this.hastaCarga = null;
         this.hastaConsulta = null;
-        this.logs = logService.getByDateRangeCarga(desdeCarga, hastaCarga);
+        this.logs = logService.getTwoMontsAgo();
     }
 }

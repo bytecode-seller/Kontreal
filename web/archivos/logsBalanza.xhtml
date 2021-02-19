@@ -29,7 +29,7 @@
 
                 <p:layoutUnit position="center" header="Logs de carga de archivos de Balanza de comprobacion y Catalogo de cuentas">
                     
-                    <h:form style="margin: 0 auto; width: 100%;" >
+                    <h:form style="margin: 0 auto !important; width: 100%;" >
                         <p:dataTable id="logTable"
                                      var="log"
                                      value="#{logArchivoBalanzaBean.logs}" 
@@ -37,27 +37,23 @@
                                      emptyMessage="No hay registros con esta condicion"
                                      scrollable="true"
                                      scrollHeight="300"
-                                     style="width: 80%">
-                               
-<!--                            <f:facet name="header">
-                                <h:outputText value="Logs archivos"/>
-                            </f:facet>-->
-                            <p:separator/><br/>
+                                     >
                             <f:facet name="header">
-                                <h:outputText value="Filtrar por fecha de carga" style="margin-right: 15%"/>
-                                <h:outputText value="Filtrar por fecha de consulta"/>
--->                                <p:toolbar id="toolbar">
-                                    <p:toolbarGroup align="left">
+                                <h:outputText value="Logs archivos"/>
+                                <p:separator/>
+                                <div>
+                                    <div style="display: inline-block">
+                                        <h:outputText value="Filtrar por fecha de carga"/>
+                                        <p:separator/>
                                         <p:outputLabel value="Desde:&nbsp;"/>
                                         <p:calendar value="#{logArchivoBalanzaBean.desdeCarga}" locale="es" showOn="button" placeholder="Desde" readonlyInput="true" 
                                                     navigator="true" styleClass="calendar_inputbox-notime" pattern="yyyy-MMMM-dd" yearRange="c-2:c+0" widgetVar="calWidDesdeCarga">
                                             <p:ajax event="dateSelect" 
-                                                    listener="#{logArchivoBalanzaBean.chooseFechaCarga()}"
+                                                    listener="#{logArchivoBalanzaBean.chooseFecha()}"
                                                     update="@form"
                                                     process="@(:not(button))"/>
                                         </p:calendar>
                                         <p:spacer width="5"/>
-                                        <p:separator/>
                                         <p:outputLabel value="Hasta:&nbsp;"/>
                                         <p:calendar value="#{logArchivoBalanzaBean.hastaCarga}" 
                                                     locale="es" 
@@ -70,22 +66,23 @@
                                                     yearRange="c-2:c+0"
                                                     widgetVar="calWidHastaCarga">
                                             <p:ajax event="dateSelect" 
-                                                    listener="#{logArchivoBalanzaBean.chooseFechaCarga()}" 
+                                                    listener="#{logArchivoBalanzaBean.chooseFecha()}" 
                                                     update="@form"
                                                     process="@(:not(button))"/>
                                         </p:calendar>
-                                    </p:toolbarGroup>
-                                    <p:toolbarGroup align="left">
+                                    </div>
+                                    <div style="display: inline-block">
+                                        <h:outputText value="Filtrar por fecha de consulta"/>
+                                        <p:separator/>
                                         <p:outputLabel value="Desde:&nbsp;"/>
                                         <p:calendar value="#{logArchivoBalanzaBean.desdeConsulta}" locale="es" showOn="button" placeholder="Desde" readonlyInput="true" 
                                                     navigator="true" styleClass="calendar_inputbox-notime" pattern="yyyy-MMMM-dd" yearRange="c-2:c+0" widgetVar="calWidDesdeConsulta">
                                             <p:ajax event="dateSelect" 
-                                                    listener="#{logArchivoBalanzaBean.chooseFechaConsulta()}"
+                                                    listener="#{logArchivoBalanzaBean.chooseFecha()}"
                                                     update="@form"
                                                     process="@(:not(button))"/>
                                         </p:calendar>
                                         <p:spacer width="5"/>
-                                        <p:separator/>
                                         <p:outputLabel value="Hasta:&nbsp;"/>
                                         <p:calendar value="#{logArchivoBalanzaBean.hastaConsulta}" 
                                                     locale="es" 
@@ -98,13 +95,12 @@
                                                     yearRange="c-2:c+0"
                                                     widgetVar="calWidHastaConsulta">
                                             <p:ajax event="dateSelect" 
-                                                    listener="#{logArchivoBalanzaBean.chooseFechaConsulta()}" 
+                                                    listener="#{logArchivoBalanzaBean.chooseFecha()}" 
                                                     update="@form"
                                                     process="@(:not(button))"/>
                                         </p:calendar>
-                                        <p:commandButton value="Reset" action="#{logArchivoBalanzaBean.clearDates()}" onclick="calWidDesdeCarga.setDate(null);calWidHastaCarga.setDate(null);calWidDesdeConsulta.setDate(null);calWidHastaConsulta.setDate(null);"/>
-                                    </p:toolbarGroup>
-                                </p:toolbar>
+                                    </div>
+                                </div>
                             </f:facet> 
                             
                             <p:column filterBy="#{log.nombre}" filterMatchMode="contains" width="25%">
@@ -149,6 +145,7 @@
                                 </f:facet>
                                 <h:outputText value="#{log.guardado eq true ? 'Si': 'No' } " />
                             </p:column>
+                            <f:facet name="footer">&nbsp;</f:facet>
                         </p:dataTable>
                     </h:form>
                 </p:layoutUnit>

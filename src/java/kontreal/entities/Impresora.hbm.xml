@@ -16,7 +16,7 @@
         <property name="printCharacteristic" type="string">
             <column name="characteristic" length="45" />
         </property>
-        <property name="idImpresora" type="java.lang.Integer">
+        <property name="tamanio" type="java.lang.Integer">
             <column name="tamanio" />
         </property>
     </class>

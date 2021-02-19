@@ -48,7 +48,7 @@ public class ResultadosDao {
         List<Object[]> objQuery = session.createQuery("Select b.cuenta.numeroCuenta, b.cuenta.tipo, b.cuenta.nombre, b.fecha, "
                 + "b.cargos, b.abonos, b.saldofin from Balanza b where b.cuenta.empresa = :emp "
                 + "and b.cuenta.numeroCuenta like :cta and b.cuenta.nivel = :niv and YEAR(b.fecha) = :eje order by b.cuenta, b.fecha")
-                .setEntity("emp", empresa).setParameter("cta", ctaSupLike).setInteger("niv", nivel + 1).setInteger("eje", ejercicio).list();
+                .setEntity("emp", empresa).setParameter("cta", ctaSupLike).setInteger("niv", nivel).setInteger("eje", ejercicio).list();
         
         return objQuery;
     }
@@ -76,7 +76,7 @@ public class ResultadosDao {
         List<Object[]> objQuery = session.createQuery("Select b.cuenta.numeroCuenta, b.cuenta.tipo, b.cuenta.nombre, b.fecha, "
                 + "b.cargos, b.abonos, b.saldofin from Balanza b where b.cuenta.empresa = :emp "
                 + "and b.cuenta.cuenta like :cta and b.cuenta.nivel = :niv and YEAR(b.fecha) = :eje order by b.cuenta, b.fecha")
-                .setEntity("emp", empresa).setParameter("cta", ctaSupLike).setInteger("niv", nivel + 1).setInteger("eje", ejercicio).list();
+                .setEntity("emp", empresa).setParameter("cta", ctaSupLike).setInteger("niv", nivel).setInteger("eje", ejercicio).list();
         Date maxFecha = (Date) session.createQuery("select max(b.fecha) from Balanza b where b.cuenta.empresa = :emp and YEAR(b.fecha) = :eje")
                 .setEntity("emp", empresa).setInteger("eje", ejercicio).uniqueResult();
 

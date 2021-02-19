@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.List;
 import kontreal.entities.LogArchivoBalanza;
 import kontreal.util.HibernateUtil;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -26,51 +28,37 @@ public class LogArchivoBalanzaDao {
         session.save(log);
     }
     
-    public static List<LogArchivoBalanza> getByDateLimitCarga(Date limit){
+    public static List<LogArchivoBalanza> findByStartDate(Date startDate){
         HibernateUtil.beginTransaction();
         Session session = HibernateUtil.getSession();
-        
-        return session.createQuery("from LogArchivoBalanza l where l.fechaCarga <= :limit")
-                .setDate("limit", limit).list();
+        Criteria cr = session.createCriteria(LogArchivoBalanza.class);
+        cr.add(Restrictions.ge("fechaArchivo", startDate));
+        return cr.list();
     }
     
-    public static List<LogArchivoBalanza> getByBeginDateCarga(Date begin){
+    public static List<LogArchivoBalanza> getByDataWithCriteria(Date bCarga, Date eCarga, Date bConsulta, Date eConsulta){
         HibernateUtil.beginTransaction();
         Session session = HibernateUtil.getSession();
         
-        return session.createQuery("from LogArchivoBalanza l where l.fechaCarga >= :begin")
-                .setDate("begin", begin).list();
-    }
-    
-    public static List<LogArchivoBalanza> getBetweenDateCarga(Date begin, Date limit){
-        HibernateUtil.beginTransaction();
-        Session session = HibernateUtil.getSession();
+        Criteria criteria = session.createCriteria(LogArchivoBalanza.class);
         
-        return session.createQuery("from LogArchivoBalanza l where l.fechaCarga >= :begin and l.fechaCarga <= :limit " )
-                .setDate("begin", begin).setDate("limit", limit).list();
-    }
-    
-    public static List<LogArchivoBalanza> getByDateLimitConsulta(Date limit){
-        HibernateUtil.beginTransaction();
-        Session session = HibernateUtil.getSession();
+        if(bCarga != null){
+            criteria.add(Restrictions.ge("fechaCarga", bCarga));
+            System.out.println("Entro a fecha carga inicio: "+bCarga);
+        }
+        if(eCarga != null){
+            criteria.add(Restrictions.le("fechaCarga", eCarga));
+            System.out.println("Entro a fecha carga limite: "+eCarga);
+        }
+        if(bConsulta != null){
+            criteria.add(Restrictions.ge("fechaArchivo", bConsulta));
+            System.out.println("Entro a fecha archivo inicio: "+bConsulta);
+        }
+        if(eConsulta != null){
+            criteria.add(Restrictions.le("fechaArchivo", eConsulta));
+            System.out.println("Entro a fecha archivo limite: "+eConsulta);
+        }
         
-        return session.createQuery("from LogArchivoBalanza l where l.fechaArchivo <= :limit")
-                .setDate("limit", limit).list();
-    }
-    
-    public static List<LogArchivoBalanza> getByBeginDateConsulta(Date begin){
-        HibernateUtil.beginTransaction();
-        Session session = HibernateUtil.getSession();
-        
-        return session.createQuery("from LogArchivoBalanza l where l.fechaArchivo >= :begin")
-                .setDate("begin", begin).list();
-    }
-    
-    public static List<LogArchivoBalanza> getBetweenDateConsulta(Date begin, Date limit){
-        HibernateUtil.beginTransaction();
-        Session session = HibernateUtil.getSession();
-        
-        return session.createQuery("from LogArchivoBalanza l where l.fechaArchivo >= :begin and l.fechaArchivo <= :limit " )
-                .setDate("begin", begin).setDate("limit", limit).list();
+        return criteria.list();
     }
 }

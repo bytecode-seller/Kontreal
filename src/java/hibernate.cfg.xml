@@ -29,5 +29,6 @@
     <mapping resource="kontreal/entities/Minicatalogo.hbm.xml"/>
     <mapping resource="kontreal/entities/Lminicatalogo.hbm.xml"/>
     <mapping resource="kontreal/entities/LogArchivoBalanza.hbm.xml"/>
+    <mapping resource="kontreal/entities/Impresora.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
