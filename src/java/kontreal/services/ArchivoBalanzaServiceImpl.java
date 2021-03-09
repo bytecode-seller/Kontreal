@@ -110,6 +110,17 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService, Seriali
         }
         
         datosArchivo.setFechaDescarga(fechaDescargaParseada);
+        
+        String error = elements.last().text();
+        System.out.println("este es el error en el archivo: " + error);
+        
+        if(error.equals(kontreal.errors.Error.ERROR_SALDOS_I_INCOINCIDENTES) || error.equals(kontreal.errors.Error.ERROR_SALDOS_A_INCOINCIDENTES)){
+            erroresArchivo.add(error);
+            datosArchivo.setValid(false);
+            datosArchivo.setErrores(erroresArchivo);
+            return datosArchivo;
+        }
+        
         System.out.println("Antes del ciclo");
         
         Balanza b = null;
@@ -144,6 +155,7 @@ public class ArchivoBalanzaServiceImpl implements ArchivoBalanzaService, Seriali
             }
             else{
                 //Guardamos los datos de las cuentas que aparecen en el archivo de la balanza pero no estan registradas en la base de datos
+                System.out.println(elements.get(i).text());
                 cuentasNoRegistradas.put(elements.get(i).child(CUENTA).text(), elements.get(i).child(NOMBRE_CUENTA).text());
             }
             c = null;

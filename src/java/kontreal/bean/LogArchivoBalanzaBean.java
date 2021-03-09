@@ -1,6 +1,7 @@
 package kontreal.bean;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +10,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import kontreal.entities.LogArchivoBalanza;
-import kontreal.services.LogServiceImpl;
+import kontreal.services.log.LogServiceImpl;
 
 /**
  *
@@ -34,7 +35,9 @@ public class LogArchivoBalanzaBean implements Serializable{
     @PostConstruct
     public void initData(){
         logs = new ArrayList<>();
-        boolean addAll = logs.addAll( logService.getTwoMontsAgo() );
+        desdeCarga = Date.from(ZonedDateTime.now().minusMonths(2).toInstant());
+        hastaCarga = new Date();
+        boolean addAll = logs.addAll( logService.getByDateWithCritera(desdeCarga, hastaCarga, desdeConsulta, desdeConsulta) );
         if(!addAll)
             System.out.println("No se cargaron los logs");
     }

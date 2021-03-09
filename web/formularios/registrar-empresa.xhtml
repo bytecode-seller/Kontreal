@@ -1,0 +1,41 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:p="http://primefaces.org/ui" >
+    <h:head>
+        <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <meta http-equiv="refresh" content="#{session.maxInactiveInterval}; url=#{request.contextPath}/index.xhtml?faces-redirect=true"/>
+                <title>::: K O N T R E A L :::</title>
+            </f:facet>
+
+            <h:outputStylesheet name="css/default.css"/>
+            <h:outputScript name="js/localization.js"/>
+    </h:head>
+    <h:body>
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" size="70" style="text-align: center;">
+                    <h:graphicImage url="/resources/images/kontreal.png" width="10%" />
+            </p:layoutUnit>
+            <p:layoutUnit position="west" header="Menú">
+                    <ui:include src="/menu.xhtml"/>
+            </p:layoutUnit>
+            <p:layoutUnit id="idUnidad" position="center" header="Registrar nueva empresa">
+                <h:form id="companyRegisterForm" style="margin: 0 auto !important; width: 40%; padding-top: 50px">
+                    <div class="form-group">
+                        <p:outputLabel value="Nombre de la empresa:" style="margin: 20px 0px !important;"/>
+                        <p:inputText value="#{registroEmpresaBean.nombreEmpresa}" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <p:outputLabel value="Descripción:"/>
+                        <p:inputText value="#{registroEmpresaBean.descripcion}" class="form-control"/>
+                    </div>
+                    <div class="form-group" style="width: 50%; margin: 0 auto !important;">
+                        <p:commandButton value="Guardar" style="width: 100%;" action="#{registroEmpresaBean.registrar()}" update="companyRegisterForm"/>
+                    </div>
+                    <p:messages globalOnly="true" showDetail="true" closable="true"/>
+                </h:form>
+            </p:layoutUnit>
+        </p:layout>
+    </h:body>
+</html>

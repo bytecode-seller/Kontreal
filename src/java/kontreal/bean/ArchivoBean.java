@@ -13,10 +13,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import kontreal.dao.BalanzaDao;
 import kontreal.dao.LogArchivoBalanzaDao;
+import kontreal.dto.Archivo;
 import kontreal.dto.ArchivoBalanzaDTO;
 import kontreal.entities.Balanza;
 import kontreal.entities.LogArchivoBalanza;
 import kontreal.services.ArchivoBalanzaServiceImpl;
+import kontreal.services.archivo.ArchivoService;
 import kontreal.util.FileUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -45,6 +47,7 @@ public class ArchivoBean implements Serializable{
     
     @Inject
     private ArchivoBalanzaServiceImpl archivoBalanzaService;
+//    private CopyOnWriteArrayList<Archivo> archivos = new CopyOnWriteArrayList<>();
     private UploadedFile file;
     private Date fechaBalanza;
     private String empresa;
@@ -119,8 +122,21 @@ public class ArchivoBean implements Serializable{
         } catch (IOException ex) {
             System.out.println("Error al convertir archivo a texto");
         }
-        //Se  filtran y validan los datos
-        archivosBalanza.add(archivoBalanzaService.filterDataFromHtml(htmlString));
+        //Filtrado y  validacion de datos en archivo
+        try {
+            archivosBalanza.add(archivoBalanzaService.filterDataFromHtml(htmlString));
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance()
+                                .addMessage("documento", new FacesMessage(FacesMessage.SEVERITY_ERROR,"Error al leer documento","Error de archivo no previsto, favor de contactar al administrador"));
+            LogArchivoBalanza log = new LogArchivoBalanza();
+            log.setMensaje("Error en archivo: " + e.getMessage());
+            log.setFechaCarga(new Date());
+            log.setNombre(name);
+            log.setFechaArchivo(null);
+            log.setFechaDescarga(null);
+            log.setNumRegistros(0);
+            LogArchivoBalanzaDao.insert(log);
+        }
         
         if(fileCounter.decrementAndGet() == 0) {
             int totalArchivos = archivosBalanza.size() -1 ;
@@ -140,6 +156,14 @@ public class ArchivoBean implements Serializable{
                         log.setMensaje("Se cancela por no existir cuenta(s) contables.");
                     }else{
                         log.setMensaje("Error al leer el documento");
+                    }
+                    
+                    if(archivosBalanza.get(i).getErrores().get(0).startsWith(kontreal.errors.Error.ERROR_SALDOS_A_INCOINCIDENTES)){
+                        log.setMensaje("Los saldos actuales no coinciden");
+                    }
+                    
+                    if(archivosBalanza.get(i).getErrores().get(0).startsWith(kontreal.errors.Error.ERROR_SALDOS_I_INCOINCIDENTES)){
+                        log.setMensaje("Los saldos iniciales no coinciden");
                     }
                     
                     log.setFechaCarga(new Date());

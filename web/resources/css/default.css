@@ -26,3 +26,16 @@
 .disable-scroll .ui-layout-unit-content {
   overflow: hidden !important;
 }
+
+.form-control{
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.form-group{
+    margin: 0 auto;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}

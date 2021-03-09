@@ -35,4 +35,16 @@ public class EmpresaDao {
         
         return session.createQuery("from Empresa e where e.nombre = :name").setString("name", nombreEmpresa).uniqueResult() != null;
     }
+    
+    public static Empresa findByName(String name){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        return (Empresa) session.createQuery("from Empresa e where e.nombre = :name").setString("name", name).uniqueResult();
+    }
+    
+    public static boolean save(Empresa empresa){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        return (boolean) session.save(empresa);
+    }
 }

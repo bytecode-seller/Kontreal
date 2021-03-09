@@ -1,4 +1,4 @@
-package kontreal.services;
+package kontreal.services.log;
 
 import java.util.Date;
 import java.util.List;

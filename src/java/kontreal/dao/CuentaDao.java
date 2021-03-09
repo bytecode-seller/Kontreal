@@ -6,6 +6,7 @@
 package kontreal.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -133,5 +134,14 @@ public class CuentaDao {
         HibernateUtil.beginTransaction();
         Session session = HibernateUtil.getSession();
         return session.createQuery("from Cuenta c").list();
+    }
+    
+    public static Boolean isUpload(Date fecha, String empresa){
+        HibernateUtil.beginTransaction();
+        Session session = HibernateUtil.getSession();
+        return (Cuenta)session.createQuery("select count(*) from Cuenta c where c.fecha = :date and c.empresa.nombre = :emp")
+                .setDate("date", fecha)
+                .setString("emp", empresa)
+                .uniqueResult() != null;
     }
 }

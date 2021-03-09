@@ -33,7 +33,7 @@ public class LogArchivoBalanzaDao {
         Session session = HibernateUtil.getSession();
         Criteria cr = session.createCriteria(LogArchivoBalanza.class);
         cr.add(Restrictions.ge("fechaArchivo", startDate));
-        return cr.list();
+        return session.createQuery("FROM LogArchivoBalanza WHERE fechaArchivo >= :startDate").setDate("startDate", startDate).list();
     }
     
     public static List<LogArchivoBalanza> getByDataWithCriteria(Date bCarga, Date eCarga, Date bConsulta, Date eConsulta){
